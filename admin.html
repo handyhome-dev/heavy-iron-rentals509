@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin | Heavy Iron Rentals</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black:     #0D0D0D;
+      --iron:      #161616;
+      --steel:     #222222;
+      --plate:     #2E2E2E;
+      --rim:       #3A3A3A;
+      --smoke:     #666;
+      --ash:       #999;
+      --chalk:     #DEDBD5;
+      --white:     #F5F2ED;
+      --orange:    #E8500A;
+      --orange-dk: #B83D08;
+      --yellow:    #F0B429;
+      --green:     #22C55E;
+      --blue:      #3B82F6;
+      --red:       #EF4444;
+    }
+ 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+ 
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--black);
+      color: var(--chalk);
+      min-height: 100vh;
+    }
+ 
+    /* ── LOGIN ── */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--black);
+      position: relative;
+    }
+    #login-screen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -55deg, transparent, transparent 60px,
+        rgba(232,80,10,0.03) 60px, rgba(232,80,10,0.03) 61px
+      );
+    }
+    .login-card {
+      background: var(--iron);
+      border: 1.5px solid var(--plate);
+      border-top: 3px solid var(--orange);
+      border-radius: 4px;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 360px;
+      position: relative;
+      z-index: 1;
+    }
+    .login-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.8rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--white);
+      text-align: center;
+      margin-bottom: 0.25rem;
+    }
+    .login-logo span { color: var(--orange); }
+    .login-sub {
+      text-align: center;
+      font-size: 0.75rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--smoke);
+      margin-bottom: 2rem;
+    }
+    .login-group { margin-bottom: 1rem; }
+    .login-group label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ash);
+      margin-bottom: 0.35rem;
+    }
+    .login-group input {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      background: var(--steel);
+      border: 1.5px solid var(--plate);
+      border-radius: 2px;
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.95rem;
+      transition: border-color 0.2s;
+    }
+    .login-group input:focus { outline: none; border-color: var(--orange); }
+    .login-btn {
+      width: 100%;
+      padding: 0.8rem;
+      background: var(--orange);
+      color: var(--white);
+      border: none;
+      border-radius: 2px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background 0.2s;
+    }
+    .login-btn:hover { background: var(--orange-dk); }
+    .login-error {
+      color: var(--red);
+      font-size: 0.8rem;
+      text-align: center;
+      margin-top: 0.75rem;
+      display: none;
+    }
+ 
+    /* ── APP SHELL ── */
+    #app { display: none; }
+ 
+    /* NAV */
+    .admin-nav {
+      background: rgba(13,13,13,0.98);
+      border-bottom: 2px solid var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.5rem;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .admin-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.4rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+    .admin-logo span { color: var(--orange); }
+    .admin-logo small {
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      color: var(--smoke);
+      margin-left: 0.5rem;
+      font-weight: 400;
+      vertical-align: middle;
+    }
+    .nav-right-admin { display: flex; align-items: center; gap: 1rem; }
+    .site-link {
+      font-size: 0.75rem;
+      color: var(--ash);
+      text-decoration: none;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .site-link:hover { color: var(--orange); }
+    .logout-btn {
+      background: var(--plate);
+      border: none;
+      color: var(--ash);
+      padding: 0.35rem 0.85rem;
+      border-radius: 2px;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+      transition: background 0.2s, color 0.2s;
+    }
+    .logout-btn:hover { background: var(--red); color: var(--white); }
+ 
+    /* TABS */
+    .tab-bar {
+      background: var(--iron);
+      border-bottom: 1px solid var(--plate);
+      display: flex;
+      padding: 0 1.5rem;
+    }
+    .tab-btn {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--smoke);
+      padding: 0.85rem 1.25rem;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+      margin-bottom: -1px;
+    }
+    .tab-btn:hover { color: var(--ash); }
+    .tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); }
+ 
+    /* CONTENT */
+    .tab-content { display: none; padding: 1.5rem; max-width: 1200px; margin: 0 auto; }
+    .tab-content.active { display: block; }
+ 
+    /* STATS STRIP */
+    .stats-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--iron);
+      border: 1.5px solid var(--plate);
+      border-radius: 4px;
+      padding: 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .stat-card.orange::before { background: var(--orange); }
+    .stat-card.green::before  { background: var(--green); }
+    .stat-card.yellow::before { background: var(--yellow); }
+    .stat-card.blue::before   { background: var(--blue); }
+    .stat-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--smoke);
+      margin-bottom: 0.5rem;
+    }
+    .stat-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 2.2rem;
+      line-height: 1;
+      color: var(--white);
+    }
+    .stat-value.money { color: var(--yellow); }
+    .stat-value.green { color: var(--green); }
+    .stat-value.orange { color: var(--orange); }
+    .stat-sub {
+      font-size: 0.72rem;
+      color: var(--smoke);
+      margin-top: 0.35rem;
+    }
+ 
+    /* SECTION HEADER */
+    .section-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      margin-top: 2rem;
+    }
+    .section-hdr:first-of-type { margin-top: 0; }
+    .section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white);
+      border-left: 3px solid var(--orange);
+      padding-left: 0.75rem;
+    }
+ 
+    /* 3-DAY VIEW */
+    .three-day-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 700px) { .three-day-grid { grid-template-columns: 1fr; } }
+ 
+    .day-tile {
+      background: var(--iron);
+      border: 1.5px solid var(--plate);
+      border-radius: 4px;
+      overflow: hidden;
+      min-height: 160px;
+    }
+    .day-tile-header {
+      background: var(--steel);
+      padding: 0.65rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .day-tile-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+    .day-tile-date {
+      font-size: 0.72rem;
+      color: var(--ash);
+      letter-spacing: 0.5px;
+    }
+    .day-tile-body { padding: 0.75rem; }
+    .day-tile-empty {
+      padding: 1rem;
+      text-align: center;
+      color: var(--smoke);
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+ 
+    .res-chip {
+      border-radius: 3px;
+      padding: 0.5rem 0.75rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+    .res-chip:last-child { margin-bottom: 0; }
+    .res-chip.new-out    { background: rgba(232,80,10,0.15);  border-left: 3px solid var(--orange); }
+    .res-chip.in-use     { background: rgba(59,130,246,0.12); border-left: 3px solid var(--blue); }
+    .res-chip.returning  { background: rgba(34,197,94,0.12);  border-left: 3px solid var(--green); }
+    .res-chip-eq   { font-weight: 700; color: var(--white); }
+    .res-chip-name { color: var(--ash); font-size: 0.75rem; }
+    .res-chip-tag  {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 0.1rem 0.4rem;
+      border-radius: 2px;
+      margin-bottom: 0.2rem;
+    }
+    .res-chip.new-out  .res-chip-tag { background: var(--orange);  color: white; }
+    .res-chip.in-use   .res-chip-tag { background: var(--blue);    color: white; }
+    .res-chip.returning .res-chip-tag { background: var(--green);  color: white; }
+ 
+    /* PENDING CONFIRMATIONS */
+    .pending-list { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 2rem; }
+    .pending-card {
+      background: var(--iron);
+      border: 1.5px solid var(--plate);
+      border-left: 3px solid var(--yellow);
+      border-radius: 4px;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .pending-info { flex: 1; min-width: 200px; }
+    .pending-eq {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+    .pending-customer { font-size: 0.82rem; color: var(--ash); margin-top: 0.2rem; }
+    .pending-dates    { font-size: 0.78rem; color: var(--smoke); margin-top: 0.15rem; }
+    .pending-est {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--yellow);
+      white-space: nowrap;
+    }
+    .pending-actions { display: flex; gap: 0.5rem; align-items: center; }
+    .confirm-btn {
+      background: var(--green);
+      color: var(--black);
+      border: none;
+      border-radius: 2px;
+      padding: 0.5rem 1rem;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .confirm-btn:hover { opacity: 0.85; }
+    .cancel-btn {
+      background: transparent;
+      color: var(--red);
+      border: 1.5px solid var(--red);
+      border-radius: 2px;
+      padding: 0.5rem 0.75rem;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .cancel-btn:hover { background: var(--red); color: white; }
+ 
+    /* CONFIRM MODAL */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-card {
+      background: var(--iron);
+      border: 1.5px solid var(--plate);
+      border-top: 3px solid var(--green);
+      border-radius: 4px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 420px;
+      animation: fadeUp 0.25s ease;
+    }
+    .modal-card.cancel-modal { border-top-color: var(--red); }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .modal-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.3rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 0.25rem;
+    }
+    .modal-sub { font-size: 0.82rem; color: var(--ash); margin-bottom: 1.25rem; line-height: 1.5; }
+    .modal-field { margin-bottom: 1rem; }
+    .modal-field label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ash);
+      margin-bottom: 0.35rem;
+    }
+    .modal-field input,
+    .modal-field textarea {
+      width: 100%;
+      padding: 0.65rem 0.875rem;
+      background: var(--steel);
+      border: 1.5px solid var(--plate);
+      border-radius: 2px;
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.9rem;
+    }
+    .modal-field input:focus,
+    .modal-field textarea:focus { outline: none; border-color: var(--orange); }
+    .modal-field textarea { resize: vertical; min-height: 80px; }
+    .modal-actions { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+    .modal-confirm {
+      flex: 1;
+      padding: 0.7rem;
+      background: var(--green);
+      color: var(--black);
+      border: none;
+      border-radius: 2px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .modal-confirm:hover { opacity: 0.85; }
+    .modal-confirm.red { background: var(--red); color: white; }
+    .modal-cancel-action {
+      padding: 0.7rem 1.25rem;
+      background: var(--plate);
+      color: var(--ash);
+      border: none;
+      border-radius: 2px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+ 
+    /* RESERVATIONS TABLE */
+    .filter-bar {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .filter-bar input,
+    .filter-bar select {
+      padding: 0.55rem 0.875rem;
+      background: var(--steel);
+      border: 1.5px solid var(--plate);
+      border-radius: 2px;
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.85rem;
+      transition: border-color 0.2s;
+    }
+    .filter-bar input:focus,
+    .filter-bar select:focus { outline: none; border-color: var(--orange); }
+    .filter-bar input { flex: 1; min-width: 180px; }
+    .filter-bar select option { background: var(--steel); }
+ 
+    .table-wrap {
+      background: var(--iron);
+      border: 1.5px solid var(--plate);
+      border-radius: 4px;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    thead th {
+      background: var(--steel);
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ash);
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+    }
+    thead th:hover { color: var(--white); }
+    tbody td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--plate);
+      color: var(--chalk);
+      vertical-align: middle;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(255,255,255,0.02); }
+ 
+    .status-pill {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .status-pill.pending    { background: rgba(240,180,41,0.15); color: var(--yellow); }
+    .status-pill.confirmed  { background: rgba(34,197,94,0.15);  color: var(--green); }
+    .status-pill.cancelled  { background: rgba(239,68,68,0.15);  color: var(--red); }
+ 
+    .tbl-cancel-btn {
+      background: transparent;
+      border: 1px solid var(--rim);
+      color: var(--smoke);
+      padding: 0.25rem 0.6rem;
+      border-radius: 2px;
+      font-size: 0.72rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .tbl-cancel-btn:hover { border-color: var(--red); color: var(--red); }
+ 
+    .empty-state {
+      padding: 2.5rem;
+      text-align: center;
+      color: var(--smoke);
+      font-size: 0.82rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+ 
+    /* EQUIPMENT MANAGEMENT */
+    .eq-mgmt-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .eq-mgmt-card {
+      background: var(--iron);
+      border: 1.5px solid var(--plate);
+      border-radius: 4px;
+      padding: 1.25rem;
+      position: relative;
+    }
+    .eq-mgmt-card.inactive { opacity: 0.5; }
+    .eq-mgmt-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 0.25rem;
+    }
+    .eq-mgmt-cat  { font-size: 0.72rem; color: var(--orange); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .eq-mgmt-rate { font-size: 0.85rem; color: var(--yellow); font-weight: 600; margin-bottom: 0.75rem; }
+    .eq-mgmt-actions { display: flex; gap: 0.5rem; }
+    .eq-edit-btn {
+      flex: 1;
+      padding: 0.45rem;
+      background: var(--plate);
+      color: var(--ash);
+      border: none;
+      border-radius: 2px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .eq-edit-btn:hover { background: var(--orange); color: white; }
+    .eq-toggle-btn {
+      padding: 0.45rem 0.75rem;
+      background: transparent;
+      border: 1.5px solid var(--rim);
+      color: var(--smoke);
+      border-radius: 2px;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: 'Barlow', sans-serif;
+      transition: all 0.2s;
+    }
+    .eq-toggle-btn:hover { border-color: var(--ash); color: var(--ash); }
+    .eq-toggle-btn.active-toggle { border-color: var(--green); color: var(--green); }
+ 
+    .add-eq-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.25rem;
+      background: var(--orange);
+      color: white;
+      border: none;
+      border-radius: 2px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .add-eq-btn:hover { background: var(--orange-dk); }
+ 
+    /* EQUIPMENT FORM MODAL */
+    .eq-modal-card {
+      background: var(--iron);
+      border: 1.5px solid var(--plate);
+      border-top: 3px solid var(--orange);
+      border-radius: 4px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: fadeUp 0.25s ease;
+    }
+    .eq-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .eq-form-full { grid-column: 1 / -1; }
+    .eq-form-group { margin-bottom: 0; }
+    .eq-form-group label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ash);
+      margin-bottom: 0.35rem;
+    }
+    .eq-form-group input,
+    .eq-form-group select,
+    .eq-form-group textarea {
+      width: 100%;
+      padding: 0.65rem 0.875rem;
+      background: var(--steel);
+      border: 1.5px solid var(--plate);
+      border-radius: 2px;
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.9rem;
+    }
+    .eq-form-group input:focus,
+    .eq-form-group select:focus,
+    .eq-form-group textarea:focus { outline: none; border-color: var(--orange); }
+    .eq-form-group textarea { resize: vertical; min-height: 70px; }
+    .eq-form-group select option { background: var(--steel); }
+ 
+    /* TOP CUSTOMERS PLACEHOLDER */
+    .placeholder-box {
+      background: var(--iron);
+      border: 1.5px dashed var(--plate);
+      border-radius: 4px;
+      padding: 3rem;
+      text-align: center;
+      color: var(--smoke);
+    }
+    .placeholder-box .ph-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+    .placeholder-box .ph-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ash);
+      margin-bottom: 0.4rem;
+    }
+    .placeholder-box .ph-desc { font-size: 0.82rem; line-height: 1.6; }
+ 
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--steel);
+      border: 1.5px solid var(--orange);
+      color: var(--chalk);
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      z-index: 999;
+      transition: transform 0.3s ease;
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: var(--green); }
+    .toast.error   { border-color: var(--red); }
+ 
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 0.4rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+ 
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">Heavy <span>Iron</span></div>
+    <div class="login-sub">Admin Access</div>
+    <div class="login-group">
+      <label>Password</label>
+      <input type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()" />
+    </div>
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="login-error" id="login-error">Incorrect password. Try again.</div>
+  </div>
+</div>
+ 
+<!-- APP -->
+<div id="app">
+  <nav class="admin-nav">
+    <div class="admin-logo">Heavy <span>Iron</span><small>Admin</small></div>
+    <div class="nav-right-admin">
+      <a href="index.html" class="site-link" target="_blank">↗ View Site</a>
+      <button class="logout-btn" onclick="doLogout()">Log Out</button>
+    </div>
+  </nav>
+ 
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('operations')">Operations</button>
+    <button class="tab-btn" onclick="switchTab('management')">Management</button>
+  </div>
+ 
+  <!-- TAB 1: OPERATIONS -->
+  <div class="tab-content active" id="tab-operations">
+ 
+    <!-- STATS -->
+    <div class="stats-strip" id="stats-strip">
+      <div class="stat-card orange">
+        <div class="stat-label">Pending</div>
+        <div class="stat-value orange" id="stat-pending">—</div>
+        <div class="stat-sub">Awaiting confirmation</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-label">Confirmed</div>
+        <div class="stat-value green" id="stat-confirmed">—</div>
+        <div class="stat-sub">This month</div>
+      </div>
+      <div class="stat-card yellow">
+        <div class="stat-label">Potential Revenue</div>
+        <div class="stat-value money" id="stat-potential">—</div>
+        <div class="stat-sub">Pending estimated totals</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">Actual Revenue</div>
+        <div class="stat-value money" id="stat-actual">—</div>
+        <div class="stat-sub">Confirmed & collected</div>
+      </div>
+    </div>
+ 
+    <!-- 3-DAY VIEW -->
+    <div class="section-hdr">
+      <div class="section-title">3-Day View</div>
+    </div>
+    <div class="three-day-grid" id="three-day-grid">
+      <div class="day-tile"><div class="day-tile-header"><span class="day-tile-label">Today</span></div><div class="day-tile-body"><div class="day-tile-empty">Loading...</div></div></div>
+      <div class="day-tile"><div class="day-tile-header"><span class="day-tile-label">Tomorrow</span></div><div class="day-tile-body"><div class="day-tile-empty">Loading...</div></div></div>
+      <div class="day-tile"><div class="day-tile-header"><span class="day-tile-label">Day After</span></div><div class="day-tile-body"><div class="day-tile-empty">Loading...</div></div></div>
+    </div>
+ 
+    <!-- PENDING CONFIRMATIONS -->
+    <div class="section-hdr">
+      <div class="section-title">Pending Confirmations</div>
+    </div>
+    <div class="pending-list" id="pending-list">
+      <div class="empty-state">Loading...</div>
+    </div>
+ 
+    <!-- CONFIRMED RESERVATIONS -->
+    <div class="section-hdr" style="margin-top:2rem;">
+      <div class="section-title">Confirmed Reservations</div>
+    </div>
+    <div class="filter-bar">
+      <input type="text"   id="res-search"    placeholder="🔍  Search by name..." oninput="filterReservations()" />
+      <select id="res-eq-filter" onchange="filterReservations()"><option value="">All Equipment</option></select>
+      <select id="res-date-filter" onchange="filterReservations()">
+        <option value="">All Dates</option>
+        <option value="upcoming">Upcoming</option>
+        <option value="past">Past</option>
+        <option value="thismonth">This Month</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortTable('customerName')">Customer ↕</th>
+            <th onclick="sortTable('equipmentName')">Equipment ↕</th>
+            <th onclick="sortTable('startDate')">Start Date ↕</th>
+            <th onclick="sortTable('endDate')">End Date ↕</th>
+            <th onclick="sortTable('estimatedTotal')">Est. Total ↕</th>
+            <th onclick="sortTable('actualPaid')">Paid ↕</th>
+            <th>Phone</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="res-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+ 
+  <!-- TAB 2: MANAGEMENT -->
+  <div class="tab-content" id="tab-management">
+ 
+    <!-- EQUIPMENT -->
+    <div class="section-hdr">
+      <div class="section-title">Equipment</div>
+      <button class="add-eq-btn" onclick="openEqModal()">+ Add Equipment</button>
+    </div>
+    <div class="eq-mgmt-grid" id="eq-mgmt-grid">
+      <div class="empty-state">Loading...</div>
+    </div>
+ 
+    <!-- CANCELLATIONS -->
+    <div class="section-hdr" style="margin-top:2rem;">
+      <div class="section-title">Cancellations</div>
+    </div>
+    <div class="filter-bar">
+      <input type="text"   id="can-search"    placeholder="🔍  Search by name..." oninput="filterCancellations()" />
+      <select id="can-eq-filter" onchange="filterCancellations()"><option value="">All Equipment</option></select>
+      <select id="can-date-filter" onchange="filterCancellations()">
+        <option value="">All Dates</option>
+        <option value="thismonth">This Month</option>
+        <option value="past">Past</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortCancellations('customerName')">Customer ↕</th>
+            <th onclick="sortCancellations('equipmentName')">Equipment ↕</th>
+            <th onclick="sortCancellations('startDate')">Start Date ↕</th>
+            <th onclick="sortCancellations('estimatedTotal')">Est. Total ↕</th>
+            <th>Notes</th>
+            <th onclick="sortCancellations('cancelledAt')">Cancelled ↕</th>
+          </tr>
+        </thead>
+        <tbody id="can-table-body"></tbody>
+      </table>
+    </div>
+ 
+    <!-- TOP CUSTOMERS PLACEHOLDER -->
+    <div class="section-hdr" style="margin-top:2rem;">
+      <div class="section-title">Top Customers</div>
+    </div>
+    <div class="placeholder-box">
+      <div class="ph-icon">🏆</div>
+      <div class="ph-title">Coming Soon</div>
+      <div class="ph-desc">Top customers by rental frequency and revenue will appear here once enough reservation history is built up.</div>
+    </div>
+ 
+  </div>
+</div>
+ 
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal-card">
+    <div class="modal-title">Confirm Reservation</div>
+    <div class="modal-sub" id="confirm-modal-sub">Enter the actual amount received via Venmo to confirm this reservation.</div>
+    <div class="modal-field">
+      <label>Actual Amount Paid ($)</label>
+      <input type="number" id="actual-paid-input" placeholder="0.00" min="0" />
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel-action" onclick="closeModal('confirm-modal')">Cancel</button>
+      <button class="modal-confirm" onclick="confirmReservation()">Confirm & Move</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- CANCEL MODAL -->
+<div class="modal-overlay" id="cancel-modal">
+  <div class="modal-card cancel-modal">
+    <div class="modal-title">Cancel Reservation</div>
+    <div class="modal-sub" id="cancel-modal-sub">This will move the reservation to the cancellation list.</div>
+    <div class="modal-field">
+      <label>Notes (optional)</label>
+      <textarea id="cancel-notes-input" placeholder="Refund issued, customer cancelled, equipment down..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel-action" onclick="closeModal('cancel-modal')">Go Back</button>
+      <button class="modal-confirm red" onclick="cancelReservation()">Cancel Reservation</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- EQUIPMENT MODAL -->
+<div class="modal-overlay" id="eq-modal">
+  <div class="eq-modal-card">
+    <div class="modal-title" id="eq-modal-title">Add Equipment</div>
+    <div style="margin-bottom:1.25rem;">
+      <div class="eq-form-grid">
+        <div class="eq-form-group eq-form-full">
+          <label>Equipment Name *</label>
+          <input type="text" id="eq-f-name" placeholder="16ft Equipment Trailer" />
+        </div>
+        <div class="eq-form-group">
+          <label>Category *</label>
+          <select id="eq-f-category">
+            <option value="">Select...</option>
+            <option>Trailer</option>
+            <option>Skid Steer</option>
+            <option>Excavator</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="eq-form-group">
+          <label>Emoji Icon</label>
+          <input type="text" id="eq-f-emoji" placeholder="🚛" style="font-size:1.2rem;" />
+        </div>
+        <div class="eq-form-group">
+          <label>Daily Rate ($) *</label>
+          <input type="number" id="eq-f-rate" placeholder="150" min="0" />
+        </div>
+        <div class="eq-form-group">
+          <label>Quantity Available</label>
+          <input type="number" id="eq-f-qty" placeholder="1" min="1" value="1" />
+        </div>
+        <div class="eq-form-group eq-form-full">
+          <label>Description</label>
+          <textarea id="eq-f-desc" placeholder="Brief description of the equipment, capacity, features..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel-action" onclick="closeModal('eq-modal')">Cancel</button>
+      <button class="modal-confirm" id="eq-save-btn" onclick="saveEquipment()">Save Equipment</button>
+    </div>
+  </div>
+</div>
+ 
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+ 
+<!-- FIREBASE -->
+<script type="module">
+  import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, query, where, orderBy, Timestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+ 
+  // ── REPLACE WITH YOUR FIREBASE CONFIG ──
+  const firebaseConfig = {
+  apiKey: "AIzaSyAuBEw5APb0-G74XNaHfjeWW-NfeYtqNrM",
+  authDomain: "heavy-iron-rentals.firebaseapp.com",
+  projectId: "heavy-iron-rentals",
+  storageBucket: "heavy-iron-rentals.firebasestorage.app",
+  messagingSenderId: "864017716659",
+  appId: "1:864017716659:web:3921c363418fbc25c967c6",
+  measurementId: "G-D33NYL95GY"
+};
+ 
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+ 
+  // ── STATE ──
+  let allReservations  = [];
+  let allEquipment     = [];
+  let allCancellations = [];
+  let pendingAction    = null;  // { id, type: 'confirm' | 'cancel' }
+  let editingEqId      = null;
+  let sortKey          = 'startDate';
+  let sortDir          = 1;
+  let sortKeyC         = 'cancelledAt';
+  let sortDirC         = -1;
+ 
+  // ── LOGIN ──
+  window.doLogin = function() {
+    const val = document.getElementById('pw-input').value;
+    if (val === 'heavyiron509') {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      loadAll();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+      document.getElementById('pw-input').value = '';
+    }
+  };
+ 
+  window.doLogout = function() {
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('pw-input').value = '';
+  };
+ 
+  // ── TABS ──
+  window.switchTab = function(tab) {
+    document.querySelectorAll('.tab-btn').forEach((b,i) => {
+      b.classList.toggle('active', (i === 0 && tab === 'operations') || (i === 1 && tab === 'management'));
+    });
+    document.getElementById('tab-operations').classList.toggle('active', tab === 'operations');
+    document.getElementById('tab-management').classList.toggle('active', tab === 'management');
+  };
+ 
+  // ── LOAD ALL DATA ──
+  async function loadAll() {
+    await Promise.all([loadEquipment(), loadReservations()]);
+    renderStats();
+    renderThreeDay();
+    renderPending();
+    renderReservationsTable();
+    renderCancellationsTable();
+    renderEqMgmt();
+    populateEqFilters();
+  }
+ 
+  async function loadEquipment() {
+    const snap = await getDocs(collection(db, 'equipment'));
+    allEquipment = [];
+    snap.forEach(d => allEquipment.push({ id: d.id, ...d.data() }));
+  }
+ 
+  async function loadReservations() {
+    const snap = await getDocs(collection(db, 'reservations'));
+    allReservations  = [];
+    allCancellations = [];
+    snap.forEach(d => {
+      const r = { id: d.id, ...d.data() };
+      if (r.status === 'cancelled') allCancellations.push(r);
+      else allReservations.push(r);
+    });
+  }
+ 
+  // ── STATS ──
+  function renderStats() {
+    const pending   = allReservations.filter(r => r.status === 'pending');
+    const confirmed = allReservations.filter(r => r.status === 'confirmed');
+    const now       = new Date();
+    const thisMonth = confirmed.filter(r => {
+      const d = r.startDate?.toDate?.() || new Date(r.startDate);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    });
+ 
+    document.getElementById('stat-pending').textContent   = pending.length;
+    document.getElementById('stat-confirmed').textContent = thisMonth.length;
+ 
+    const potential = pending.reduce((s,r) => s + (r.estimatedTotal || 0), 0);
+    const actual    = confirmed.reduce((s,r) => s + (r.actualPaid || 0), 0);
+    document.getElementById('stat-potential').textContent = `$${potential.toLocaleString()}`;
+    document.getElementById('stat-actual').textContent    = `$${actual.toLocaleString()}`;
+  }
+ 
+  // ── 3-DAY VIEW ──
+  function renderThreeDay() {
+    const today    = new Date(); today.setHours(0,0,0,0);
+    const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+    const dayAfter = new Date(today); dayAfter.setDate(today.getDate() + 2);
+ 
+    const labels = ['Today', 'Tomorrow', 'Day After'];
+    const dates  = [today, tomorrow, dayAfter];
+    const grid   = document.getElementById('three-day-grid');
+    grid.innerHTML = '';
+ 
+    dates.forEach((date, idx) => {
+      const dateStr = date.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+      const reses   = allReservations.filter(r => {
+        if (r.status === 'cancelled') return false;
+        const s = r.startDate?.toDate?.() || new Date(r.startDate);
+        const e = r.endDate?.toDate?.()   || new Date(r.endDate);
+        s.setHours(0,0,0,0); e.setHours(0,0,0,0);
+        return date >= s && date <= e;
+      });
+ 
+      let chipsHTML = '';
+      if (!reses.length) {
+        chipsHTML = '<div class="day-tile-empty">Nothing scheduled</div>';
+      } else {
+        reses.forEach(r => {
+          const s = r.startDate?.toDate?.() || new Date(r.startDate);
+          const e = r.endDate?.toDate?.()   || new Date(r.endDate);
+          s.setHours(0,0,0,0); e.setHours(0,0,0,0);
+          let type = 'in-use', tag = 'In Use';
+          if (date.getTime() === s.getTime()) { type = 'new-out';   tag = 'New Out'; }
+          if (date.getTime() === e.getTime()) { type = 'returning'; tag = 'Returning'; }
+          chipsHTML += `
+            <div class="res-chip ${type}">
+              <div><span class="res-chip-tag">${tag}</span></div>
+              <div class="res-chip-eq">${r.equipmentName || '—'}</div>
+              <div class="res-chip-name">${r.customerName || '—'}</div>
+            </div>`;
+        });
+      }
+ 
+      grid.innerHTML += `
+        <div class="day-tile">
+          <div class="day-tile-header">
+            <span class="day-tile-label">${labels[idx]}</span>
+            <span class="day-tile-date">${dateStr}</span>
+          </div>
+          <div class="day-tile-body">${chipsHTML}</div>
+        </div>`;
+    });
+  }
+ 
+  // ── PENDING LIST ──
+  function renderPending() {
+    const list    = document.getElementById('pending-list');
+    const pending = allReservations.filter(r => r.status === 'pending');
+    if (!pending.length) {
+      list.innerHTML = '<div class="empty-state">No pending reservations</div>';
+      return;
+    }
+    list.innerHTML = pending.map(r => {
+      const s = fmtDate(r.startDate); const e = fmtDate(r.endDate);
+      return `
+        <div class="pending-card" id="pc-${r.id}">
+          <div class="pending-info">
+            <div class="pending-eq">${r.equipmentName || '—'}</div>
+            <div class="pending-customer">${r.customerName || '—'} · ${r.customerPhone || ''} · ${r.customerEmail || ''}</div>
+            <div class="pending-dates">${s} → ${e}${r.customerNotes ? ' · ' + r.customerNotes : ''}</div>
+          </div>
+          <div class="pending-est">$${(r.estimatedTotal || 0).toLocaleString()}</div>
+          <div class="pending-actions">
+            <button class="confirm-btn" onclick="openConfirmModal('${r.id}')">✓ Confirm</button>
+            <button class="cancel-btn"  onclick="openCancelModal('${r.id}')">✕</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+ 
+  // ── CONFIRM MODAL ──
+  window.openConfirmModal = function(id) {
+    pendingAction = { id, type: 'confirm' };
+    const r = allReservations.find(x => x.id === id);
+    document.getElementById('confirm-modal-sub').textContent =
+      `${r?.equipmentName} — ${r?.customerName}. Estimated: $${(r?.estimatedTotal||0).toLocaleString()}. Enter actual amount received.`;
+    document.getElementById('actual-paid-input').value = r?.estimatedTotal || '';
+    document.getElementById('confirm-modal').classList.add('open');
+  };
+ 
+  window.confirmReservation = async function() {
+    const paid = parseFloat(document.getElementById('actual-paid-input').value) || 0;
+    if (!pendingAction) return;
+    try {
+      await updateDoc(doc(db, 'reservations', pendingAction.id), {
+        status: 'confirmed', actualPaid: paid
+      });
+      const idx = allReservations.findIndex(r => r.id === pendingAction.id);
+      if (idx > -1) allReservations[idx].status = 'confirmed';
+      if (idx > -1) allReservations[idx].actualPaid = paid;
+      closeModal('confirm-modal');
+      renderStats(); renderThreeDay(); renderPending(); renderReservationsTable();
+      showToast('Reservation confirmed!', 'success');
+    } catch(e) { showToast('Error confirming. Try again.', 'error'); }
+  };
+ 
+  // ── CANCEL MODAL ──
+  window.openCancelModal = function(id) {
+    pendingAction = { id, type: 'cancel' };
+    const r = allReservations.find(x => x.id === id) || allCancellations.find(x => x.id === id);
+    document.getElementById('cancel-modal-sub').textContent =
+      `Cancel reservation for ${r?.equipmentName} — ${r?.customerName}?`;
+    document.getElementById('cancel-notes-input').value = '';
+    document.getElementById('cancel-modal').classList.add('open');
+  };
+ 
+  window.cancelReservation = async function() {
+    const notes = document.getElementById('cancel-notes-input').value.trim();
+    if (!pendingAction) return;
+    try {
+      await updateDoc(doc(db, 'reservations', pendingAction.id), {
+        status: 'cancelled', cancelNotes: notes, cancelledAt: Timestamp.now()
+      });
+      const r = allReservations.find(x => x.id === pendingAction.id);
+      if (r) {
+        r.status = 'cancelled'; r.cancelNotes = notes; r.cancelledAt = Timestamp.now();
+        allReservations = allReservations.filter(x => x.id !== pendingAction.id);
+        allCancellations.push(r);
+      }
+      closeModal('cancel-modal');
+      renderStats(); renderThreeDay(); renderPending();
+      renderReservationsTable(); renderCancellationsTable();
+      showToast('Reservation cancelled.', 'success');
+    } catch(e) { showToast('Error cancelling. Try again.', 'error'); }
+  };
+ 
+  // ── RESERVATIONS TABLE ──
+  function renderReservationsTable() {
+    const search    = document.getElementById('res-search')?.value.toLowerCase()    || '';
+    const eqFilter  = document.getElementById('res-eq-filter')?.value               || '';
+    const dateFilter= document.getElementById('res-date-filter')?.value             || '';
+    const now       = new Date(); now.setHours(0,0,0,0);
+    const monthStart= new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthEnd  = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+ 
+    let rows = allReservations.filter(r => r.status === 'confirmed');
+ 
+    if (search)    rows = rows.filter(r => (r.customerName||'').toLowerCase().includes(search));
+    if (eqFilter)  rows = rows.filter(r => r.equipmentName === eqFilter);
+    if (dateFilter === 'upcoming')  rows = rows.filter(r => getDate(r.startDate) >= now);
+    if (dateFilter === 'past')      rows = rows.filter(r => getDate(r.endDate)   <  now);
+    if (dateFilter === 'thismonth') rows = rows.filter(r => {
+      const d = getDate(r.startDate);
+      return d >= monthStart && d <= monthEnd;
+    });
+ 
+    rows.sort((a,b) => {
+      let av = a[sortKey], bv = b[sortKey];
+      if (sortKey === 'startDate' || sortKey === 'endDate') { av = getDate(av); bv = getDate(bv); }
+      if (av < bv) return -sortDir; if (av > bv) return sortDir; return 0;
+    });
+ 
+    const tbody = document.getElementById('res-table-body');
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state">No confirmed reservations</div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td>${r.customerName||'—'}</td>
+        <td>${r.equipmentName||'—'}</td>
+        <td>${fmtDate(r.startDate)}</td>
+        <td>${fmtDate(r.endDate)}</td>
+        <td style="color:var(--yellow);">$${(r.estimatedTotal||0).toLocaleString()}</td>
+        <td style="color:var(--green);">$${(r.actualPaid||0).toLocaleString()}</td>
+        <td>${r.customerPhone||'—'}</td>
+        <td><button class="tbl-cancel-btn" onclick="openCancelModal('${r.id}')">Cancel</button></td>
+      </tr>`).join('');
+  }
+ 
+  window.filterReservations = renderReservationsTable;
+ 
+  window.sortTable = function(key) {
+    if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
+    renderReservationsTable();
+  };
+ 
+  // ── CANCELLATIONS TABLE ──
+  function renderCancellationsTable() {
+    const search    = document.getElementById('can-search')?.value.toLowerCase()    || '';
+    const eqFilter  = document.getElementById('can-eq-filter')?.value               || '';
+    const dateFilter= document.getElementById('can-date-filter')?.value             || '';
+    const now       = new Date(); now.setHours(0,0,0,0);
+    const monthStart= new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthEnd  = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+ 
+    let rows = [...allCancellations];
+    if (search)    rows = rows.filter(r => (r.customerName||'').toLowerCase().includes(search));
+    if (eqFilter)  rows = rows.filter(r => r.equipmentName === eqFilter);
+    if (dateFilter === 'thismonth') rows = rows.filter(r => {
+      const d = getDate(r.startDate); return d >= monthStart && d <= monthEnd;
+    });
+    if (dateFilter === 'past') rows = rows.filter(r => getDate(r.startDate) < now);
+ 
+    rows.sort((a,b) => {
+      let av = a[sortKeyC], bv = b[sortKeyC];
+      if (sortKeyC === 'startDate' || sortKeyC === 'cancelledAt') { av = getDate(av); bv = getDate(bv); }
+      if (av < bv) return -sortDirC; if (av > bv) return sortDirC; return 0;
+    });
+ 
+    const tbody = document.getElementById('can-table-body');
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">No cancellations</div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td>${r.customerName||'—'}</td>
+        <td>${r.equipmentName||'—'}</td>
+        <td>${fmtDate(r.startDate)}</td>
+        <td style="color:var(--yellow);">$${(r.estimatedTotal||0).toLocaleString()}</td>
+        <td style="color:var(--ash);font-size:0.8rem;">${r.cancelNotes||'—'}</td>
+        <td>${fmtDate(r.cancelledAt)}</td>
+      </tr>`).join('');
+  }
+ 
+  window.filterCancellations = renderCancellationsTable;
+  window.sortCancellations = function(key) {
+    if (sortKeyC === key) sortDirC *= -1; else { sortKeyC = key; sortDirC = 1; }
+    renderCancellationsTable();
+  };
+ 
+  // ── EQUIPMENT MANAGEMENT ──
+  function renderEqMgmt() {
+    const grid = document.getElementById('eq-mgmt-grid');
+    if (!allEquipment.length) { grid.innerHTML = '<div class="empty-state">No equipment yet. Add your first unit.</div>'; return; }
+    grid.innerHTML = allEquipment.map(eq => `
+      <div class="eq-mgmt-card ${eq.active === false ? 'inactive' : ''}">
+        <div class="eq-mgmt-name">${eq.emoji || '🏗️'} ${eq.name}</div>
+        <div class="eq-mgmt-cat">${eq.category || ''} · Qty: ${eq.quantity || 1}</div>
+        <div class="eq-mgmt-rate">$${eq.dailyRate || 0}/day</div>
+        <div class="eq-mgmt-actions">
+          <button class="eq-edit-btn" onclick="openEqModal('${eq.id}')">Edit</button>
+          <button class="eq-toggle-btn ${eq.active !== false ? 'active-toggle' : ''}"
+            onclick="toggleEquipment('${eq.id}', ${eq.active !== false})">
+            ${eq.active !== false ? '● Active' : '○ Inactive'}
+          </button>
+        </div>
+      </div>`).join('');
+  }
+ 
+  // ── EQUIPMENT MODAL ──
+  window.openEqModal = function(id) {
+    editingEqId = id || null;
+    document.getElementById('eq-modal-title').textContent = id ? 'Edit Equipment' : 'Add Equipment';
+    document.getElementById('eq-save-btn').textContent    = id ? 'Save Changes'   : 'Save Equipment';
+    const eq = id ? allEquipment.find(e => e.id === id) : null;
+    document.getElementById('eq-f-name').value     = eq?.name        || '';
+    document.getElementById('eq-f-category').value = eq?.category    || '';
+    document.getElementById('eq-f-emoji').value    = eq?.emoji       || '';
+    document.getElementById('eq-f-rate').value     = eq?.dailyRate   || '';
+    document.getElementById('eq-f-qty').value      = eq?.quantity    || 1;
+    document.getElementById('eq-f-desc').value     = eq?.description || '';
+    document.getElementById('eq-modal').classList.add('open');
+  };
+ 
+  window.saveEquipment = async function() {
+    const name  = document.getElementById('eq-f-name').value.trim();
+    const cat   = document.getElementById('eq-f-category').value;
+    const emoji = document.getElementById('eq-f-emoji').value.trim()  || '🏗️';
+    const rate  = parseInt(document.getElementById('eq-f-rate').value) || 0;
+    const qty   = parseInt(document.getElementById('eq-f-qty').value)  || 1;
+    const desc  = document.getElementById('eq-f-desc').value.trim();
+ 
+    if (!name || !cat || !rate) { showToast('Name, category, and rate are required.', 'error'); return; }
+ 
+    const data = { name, category: cat, emoji, dailyRate: rate, quantity: qty, description: desc, available: true, active: true };
+ 
+    try {
+      if (editingEqId) {
+        await updateDoc(doc(db, 'equipment', editingEqId), data);
+        const idx = allEquipment.findIndex(e => e.id === editingEqId);
+        if (idx > -1) allEquipment[idx] = { id: editingEqId, ...data };
+        showToast('Equipment updated!', 'success');
+      } else {
+        const ref = await addDoc(collection(db, 'equipment'), data);
+        allEquipment.push({ id: ref.id, ...data });
+        showToast('Equipment added!', 'success');
+      }
+      closeModal('eq-modal');
+      renderEqMgmt();
+      populateEqFilters();
+    } catch(e) { showToast('Error saving equipment.', 'error'); }
+  };
+ 
+  window.toggleEquipment = async function(id, currentlyActive) {
+    try {
+      await updateDoc(doc(db, 'equipment', id), { active: !currentlyActive });
+      const idx = allEquipment.findIndex(e => e.id === id);
+      if (idx > -1) allEquipment[idx].active = !currentlyActive;
+      renderEqMgmt();
+      showToast(`Equipment ${!currentlyActive ? 'activated' : 'deactivated'}.`, 'success');
+    } catch(e) { showToast('Error updating equipment.', 'error'); }
+  };
+ 
+  // ── HELPERS ──
+  function populateEqFilters() {
+    const names = [...new Set(allEquipment.map(e => e.name))];
+    ['res-eq-filter','can-eq-filter'].forEach(id => {
+      const sel = document.getElementById(id);
+      if (!sel) return;
+      const cur = sel.value;
+      sel.innerHTML = '<option value="">All Equipment</option>' +
+        names.map(n => `<option value="${n}" ${cur===n?'selected':''}>${n}</option>`).join('');
+    });
+  }
+ 
+  function getDate(val) {
+    if (!val) return new Date(0);
+    if (val?.toDate) return val.toDate();
+    return new Date(val);
+  }
+ 
+  function fmtDate(val) {
+    const d = getDate(val);
+    if (!d || isNaN(d)) return '—';
+    return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  }
+ 
+  window.closeModal = function(id) {
+    document.getElementById(id).classList.remove('open');
+    pendingAction = null;
+  };
+ 
+  window.showToast = function(msg, type='') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast' + (type ? ' ' + type : '');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  };
+ 
+  // close modals on overlay click
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => { if (e.target === el) closeModal(el.id); });
+  });
+</script>
+ 
+</body>
+</html>
+ 
