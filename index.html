@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heavy Iron Rentals | Spokane, WA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black:     #0D0D0D;
+      --iron:      #161616;
+      --steel:     #222222;
+      --plate:     #2E2E2E;
+      --smoke:     #666;
+      --ash:       #999;
+      --chalk:     #DEDBD5;
+      --white:     #F5F2ED;
+      --orange:    #E8500A;
+      --orange-dk: #B83D08;
+      --yellow:    #F0B429;
+      --green:     #22C55E;
+      --red:       #EF4444;
+      --pending:   #F0B429;
+    }
+ 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    html { scroll-behavior: smooth; }
+ 
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--black);
+      color: var(--chalk);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+ 
+    /* ── TEXTURE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+ 
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13,13,13,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 2px solid var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 64px;
+    }
+ 
+    .logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.6rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--white);
+      line-height: 1;
+    }
+    .logo span { color: var(--orange); }
+ 
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+ 
+    .nav-tag {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ash);
+    }
+ 
+    .nav-admin {
+      font-size: 0.75rem;
+      color: var(--smoke);
+      text-decoration: none;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-admin:hover { color: var(--ash); }
+ 
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      padding: 5rem 2rem 4rem;
+      text-align: center;
+      overflow: hidden;
+    }
+ 
+    .hero-bg-lines {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -55deg,
+        transparent,
+        transparent 60px,
+        rgba(232,80,10,0.03) 60px,
+        rgba(232,80,10,0.03) 61px
+      );
+      pointer-events: none;
+    }
+ 
+    .hero-eyebrow {
+      display: inline-block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--orange);
+      background: rgba(232,80,10,0.1);
+      border: 1px solid rgba(232,80,10,0.3);
+      padding: 0.3rem 1rem;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+ 
+    .hero h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: clamp(3.5rem, 9vw, 7rem);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      line-height: 0.92;
+      color: var(--white);
+      position: relative;
+    }
+ 
+    .hero h1 .accent {
+      color: var(--orange);
+      display: block;
+    }
+ 
+    .hero-sub {
+      margin-top: 1.5rem;
+      font-size: 1rem;
+      color: var(--ash);
+      font-weight: 400;
+      max-width: 480px;
+      margin-inline: auto;
+      line-height: 1.6;
+      position: relative;
+    }
+ 
+    .hero-cta {
+      margin-top: 2rem;
+      display: inline-block;
+      background: var(--orange);
+      color: var(--white);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 0.75rem 2.5rem;
+      border-radius: 2px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      position: relative;
+    }
+    .hero-cta:hover {
+      background: var(--orange-dk);
+      transform: translateY(-1px);
+    }
+ 
+    /* ── SECTION WRAPPER ── */
+    .section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+      position: relative;
+    }
+ 
+    .section-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 0.5rem;
+    }
+ 
+    .section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 2.4rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--white);
+      margin-bottom: 2rem;
+      border-left: 4px solid var(--orange);
+      padding-left: 1rem;
+    }
+ 
+    /* ── EQUIPMENT GRID ── */
+    #equipment-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+ 
+    .eq-card {
+      background: var(--iron);
+      border: 1.5px solid var(--plate);
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .eq-card:hover {
+      border-color: var(--orange);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(232,80,10,0.15);
+    }
+    .eq-card.selected {
+      border-color: var(--orange);
+      box-shadow: 0 0 0 2px var(--orange), 0 8px 30px rgba(232,80,10,0.2);
+    }
+    .eq-card.unavailable {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .eq-card.unavailable:hover {
+      transform: none;
+      border-color: var(--plate);
+      box-shadow: none;
+    }
+ 
+    .eq-card-header {
+      background: var(--steel);
+      padding: 1.25rem 1.25rem 1rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+ 
+    .eq-icon {
+      font-size: 2.5rem;
+      line-height: 1;
+    }
+ 
+    .eq-avail {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .eq-avail-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+    }
+    .eq-avail-dot.busy {
+      background: var(--red);
+      box-shadow: 0 0 6px var(--red);
+    }
+    .eq-avail.available { color: var(--green); }
+    .eq-avail.unavailable-label { color: var(--red); }
+ 
+    .eq-card-body { padding: 1.25rem; }
+ 
+    .eq-category {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 0.25rem;
+    }
+ 
+    .eq-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+ 
+    .eq-desc {
+      font-size: 0.85rem;
+      color: var(--ash);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+ 
+    .eq-rate {
+      display: flex;
+      align-items: baseline;
+      gap: 0.3rem;
+    }
+    .eq-rate-amount {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.8rem;
+      color: var(--yellow);
+    }
+    .eq-rate-label {
+      font-size: 0.8rem;
+      color: var(--ash);
+      font-weight: 500;
+    }
+ 
+    .eq-select-btn {
+      width: 100%;
+      margin-top: 1rem;
+      padding: 0.65rem;
+      background: var(--orange);
+      color: var(--white);
+      border: none;
+      border-radius: 2px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .eq-select-btn:hover { background: var(--orange-dk); }
+    .eq-select-btn.deselect {
+      background: var(--plate);
+      color: var(--ash);
+    }
+    .eq-select-btn:disabled {
+      background: var(--plate);
+      color: var(--smoke);
+      cursor: not-allowed;
+    }
+ 
+    .loading-cards {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 3rem;
+      color: var(--smoke);
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+ 
+    /* ── BOOKING PANEL ── */
+    #booking-panel {
+      display: none;
+      margin-top: 3rem;
+      background: var(--iron);
+      border: 1.5px solid var(--orange);
+      border-radius: 4px;
+      overflow: hidden;
+      animation: slideDown 0.3s ease;
+    }
+ 
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+ 
+    .booking-header {
+      background: var(--orange);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .booking-header-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+    .booking-close {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.7);
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .booking-close:hover { color: var(--white); }
+ 
+    .booking-body {
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+ 
+    @media (max-width: 700px) {
+      .booking-body { grid-template-columns: 1fr; }
+    }
+ 
+    /* ── CALENDAR ── */
+    .calendar-wrap { }
+ 
+    .cal-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .cal-nav button {
+      background: var(--plate);
+      border: none;
+      color: var(--chalk);
+      width: 32px;
+      height: 32px;
+      border-radius: 2px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s;
+    }
+    .cal-nav button:hover { background: var(--orange); }
+    .cal-month {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+ 
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 3px;
+    }
+ 
+    .cal-dow {
+      text-align: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--smoke);
+      padding: 0.3rem 0;
+    }
+ 
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      font-weight: 500;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      color: var(--chalk);
+      background: var(--steel);
+      position: relative;
+    }
+    .cal-day:hover:not(.disabled):not(.booked) {
+      background: rgba(232,80,10,0.25);
+      color: var(--white);
+    }
+    .cal-day.empty { background: transparent; cursor: default; }
+    .cal-day.today { border: 1px solid var(--orange); }
+    .cal-day.disabled {
+      color: var(--smoke);
+      background: transparent;
+      cursor: not-allowed;
+    }
+    .cal-day.booked {
+      background: rgba(239,68,68,0.15);
+      color: var(--smoke);
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+    .cal-day.pending-day {
+      background: rgba(240,180,41,0.15);
+      color: var(--pending);
+      cursor: not-allowed;
+    }
+    .cal-day.selected-start,
+    .cal-day.selected-end {
+      background: var(--orange);
+      color: var(--white);
+      font-weight: 700;
+    }
+    .cal-day.in-range {
+      background: rgba(232,80,10,0.2);
+      color: var(--white);
+      border-radius: 0;
+    }
+ 
+    .cal-legend {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.7rem;
+      color: var(--ash);
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+    .legend-dot.avail { background: var(--steel); border: 1px solid var(--plate); }
+    .legend-dot.selected-d { background: var(--orange); }
+    .legend-dot.pend { background: rgba(240,180,41,0.3); border: 1px solid var(--pending); }
+    .legend-dot.bkd { background: rgba(239,68,68,0.2); border: 1px solid var(--red); }
+ 
+    /* ── BOOKING FORM ── */
+    .booking-form { }
+ 
+    .selected-summary {
+      background: var(--steel);
+      border-radius: 3px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .selected-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+    .selected-rate {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--yellow);
+    }
+ 
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ash);
+      margin-bottom: 0.35rem;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.65rem 0.875rem;
+      background: var(--steel);
+      border: 1.5px solid var(--plate);
+      border-radius: 2px;
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--orange);
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+ 
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+ 
+    .date-display {
+      background: var(--steel);
+      border: 1.5px solid var(--plate);
+      border-radius: 2px;
+      padding: 0.65rem 0.875rem;
+      font-size: 0.9rem;
+      color: var(--ash);
+      min-height: 42px;
+    }
+    .date-display.filled { color: var(--white); border-color: var(--orange); }
+ 
+    .est-total {
+      background: var(--plate);
+      border-radius: 3px;
+      padding: 1rem;
+      margin: 1rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .est-total-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--ash);
+    }
+    .est-total-amount {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.8rem;
+      color: var(--yellow);
+    }
+ 
+    .submit-btn {
+      width: 100%;
+      padding: 0.9rem;
+      background: var(--orange);
+      color: var(--white);
+      border: none;
+      border-radius: 2px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .submit-btn:hover:not(:disabled) {
+      background: var(--orange-dk);
+      transform: translateY(-1px);
+    }
+    .submit-btn:disabled {
+      background: var(--plate);
+      color: var(--smoke);
+      cursor: not-allowed;
+      transform: none;
+    }
+ 
+    .form-note {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--smoke);
+      margin-top: 0.5rem;
+      line-height: 1.5;
+    }
+ 
+    /* ── HOW IT WORKS ── */
+    .how-strip {
+      background: var(--iron);
+      border-top: 1px solid var(--plate);
+      border-bottom: 1px solid var(--plate);
+    }
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 0;
+    }
+    .how-item {
+      padding: 2rem 1.5rem;
+      border-right: 1px solid var(--plate);
+      text-align: center;
+    }
+    .how-item:last-child { border-right: none; }
+    .how-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 3rem;
+      color: rgba(232,80,10,0.2);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+    .how-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 0.4rem;
+    }
+    .how-desc { font-size: 0.82rem; color: var(--ash); line-height: 1.5; }
+ 
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--plate);
+      padding: 2rem;
+      text-align: center;
+      color: var(--smoke);
+      font-size: 0.8rem;
+      letter-spacing: 1px;
+    }
+    footer strong { color: var(--ash); }
+ 
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--steel);
+      border: 1.5px solid var(--orange);
+      color: var(--chalk);
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      font-size: 0.875rem;
+      z-index: 999;
+      transition: transform 0.3s ease;
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.error { border-color: var(--red); }
+ 
+    /* ── SPINNER ── */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+ 
+<!-- NAV -->
+<nav>
+  <div class="logo">Heavy <span>Iron</span> Rentals</div>
+  <div class="nav-right">
+    <span class="nav-tag">📍 Spokane, WA · 509</span>
+    <a href="admin.html" class="nav-admin">Admin</a>
+  </div>
+</nav>
+ 
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg-lines"></div>
+  <div class="hero-eyebrow">Spokane's Equipment Rental</div>
+  <h1>Heavy <span class="accent">Iron</span> Rentals</h1>
+  <p class="hero-sub">Trailers, Bobcats, Excavators — ready when you need them. Reserve online in minutes.</p>
+  <a href="#equipment" class="hero-cta">View Equipment ↓</a>
+</div>
+ 
+<!-- HOW IT WORKS -->
+<div class="how-strip">
+  <div class="how-grid">
+    <div class="how-item">
+      <div class="how-num">01</div>
+      <div class="how-title">Pick Your Equipment</div>
+      <div class="how-desc">Browse available units and select what you need for your job.</div>
+    </div>
+    <div class="how-item">
+      <div class="how-num">02</div>
+      <div class="how-title">Choose Your Dates</div>
+      <div class="how-desc">Select available dates on the calendar. Booked dates are shown automatically.</div>
+    </div>
+    <div class="how-item">
+      <div class="how-num">03</div>
+      <div class="how-title">Submit & Pay Via Venmo</div>
+      <div class="how-desc">Fill in your info and send payment via Venmo to confirm your reservation.</div>
+    </div>
+    <div class="how-item">
+      <div class="how-num">04</div>
+      <div class="how-title">You're Confirmed</div>
+      <div class="how-desc">You'll receive an email confirmation once payment is verified.</div>
+    </div>
+  </div>
+</div>
+ 
+<!-- EQUIPMENT -->
+<div class="section" id="equipment">
+  <div class="section-label">Available Now</div>
+  <div class="section-title">Our Equipment</div>
+  <div id="equipment-grid">
+    <div class="loading-cards">Loading equipment...</div>
+  </div>
+ 
+  <!-- BOOKING PANEL -->
+  <div id="booking-panel">
+    <div class="booking-header">
+      <span class="booking-header-title" id="booking-header-text">Reserve Equipment</span>
+      <button class="booking-close" onclick="closeBooking()">✕</button>
+    </div>
+    <div class="booking-body">
+ 
+      <!-- CALENDAR -->
+      <div class="calendar-wrap">
+        <div class="cal-nav">
+          <button onclick="changeMonth(-1)">‹</button>
+          <span class="cal-month" id="cal-month-label"></span>
+          <button onclick="changeMonth(1)">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="cal-legend">
+          <div class="legend-item"><div class="legend-dot avail"></div> Available</div>
+          <div class="legend-item"><div class="legend-dot selected-d"></div> Selected</div>
+          <div class="legend-item"><div class="legend-dot pend"></div> Pending</div>
+          <div class="legend-item"><div class="legend-dot bkd"></div> Booked</div>
+        </div>
+      </div>
+ 
+      <!-- FORM -->
+      <div class="booking-form">
+        <div class="selected-summary">
+          <span class="selected-name" id="form-eq-name">—</span>
+          <span class="selected-rate" id="form-eq-rate">$0/day</span>
+        </div>
+ 
+        <div class="form-row">
+          <div class="form-group">
+            <label>Start Date</label>
+            <div class="date-display" id="display-start">Pick on calendar</div>
+          </div>
+          <div class="form-group">
+            <label>End Date</label>
+            <div class="date-display" id="display-end">Pick on calendar</div>
+          </div>
+        </div>
+ 
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" id="f-name" placeholder="John Smith" />
+        </div>
+ 
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone *</label>
+            <input type="tel" id="f-phone" placeholder="(509) 555-0100" />
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="f-email" placeholder="you@email.com" />
+          </div>
+        </div>
+ 
+        <div class="form-group">
+          <label>Notes (optional)</label>
+          <textarea id="f-notes" placeholder="Anything we should know about your job or pickup?"></textarea>
+        </div>
+ 
+        <div class="est-total">
+          <span class="est-total-label">Estimated Total</span>
+          <span class="est-total-amount" id="est-total-display">—</span>
+        </div>
+ 
+        <button class="submit-btn" id="submit-btn" onclick="submitBooking()">Request Reservation</button>
+        <p class="form-note">Payment via Venmo @Steve-Jones-274 · Reservation confirmed after payment received</p>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- FOOTER -->
+<footer>
+  <strong>Heavy Iron Rentals</strong> · Spokane, WA · 509 Area<br />
+  <span style="margin-top:0.4rem;display:block;">Questions? Email <a href="mailto:heavyironrentals509@gmail.com" style="color:var(--orange);text-decoration:none;">heavyironrentals509@gmail.com</a></span>
+</footer>
+ 
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+ 
+<!-- ══════════════════════════════════════════════
+     FIREBASE + EMAILJS
+══════════════════════════════════════════════ -->
+<script type="module">
+  import { initializeApp }              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, addDoc, query, where, Timestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+ 
+  // ── REPLACE WITH YOUR FIREBASE CONFIG ──
+  const firebaseConfig = {
+    apiKey: "AIzaSyAuBEw5APb0-G74XNaHfjeWW-NfeYtqNrM",
+    authDomain: "heavy-iron-rentals.firebaseapp.com",
+    projectId: "heavy-iron-rentals",
+    storageBucket: "heavy-iron-rentals.firebasestorage.app",
+    messagingSenderId: "864017716659",
+    appId: "1:864017716659:web:3921c363418fbc25c967c6",
+    measurementId: "G-D33NYL95GY"
+  };
+ 
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+ 
+  // ── STATE ──
+  let allEquipment   = [];
+  let selectedEq     = null;
+  let bookedRanges   = [];  // [{start, end, status}]
+  let calYear        = new Date().getFullYear();
+  let calMonth       = new Date().getMonth();
+  let pickStart      = null;
+  let pickEnd        = null;
+  let pickingEnd     = false;
+ 
+  const DAYS_OF_WEEK = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const MONTHS       = ['January','February','March','April','May','June',
+                        'July','August','September','October','November','December'];
+ 
+  // ── LOAD EQUIPMENT ──
+  async function loadEquipment() {
+    try {
+      const snap = await getDocs(collection(db, 'equipment'));
+      allEquipment = [];
+      snap.forEach(doc => {
+        const d = doc.data();
+        if (d.active !== false) allEquipment.push({ id: doc.id, ...d });
+      });
+      renderEquipment();
+    } catch(e) {
+      document.getElementById('equipment-grid').innerHTML =
+        '<div class="loading-cards">Unable to load equipment. Please try again later.</div>';
+    }
+  }
+ 
+  // ── RENDER EQUIPMENT CARDS ──
+  function renderEquipment() {
+    const grid = document.getElementById('equipment-grid');
+    if (!allEquipment.length) {
+      grid.innerHTML = '<div class="loading-cards">No equipment listed yet.</div>';
+      return;
+    }
+    grid.innerHTML = allEquipment.map(eq => {
+      const avail = eq.available !== false;
+      return `
+        <div class="eq-card ${avail ? '' : 'unavailable'}" id="card-${eq.id}" onclick="${avail ? `selectEquipment('${eq.id}')` : ''}">
+          <div class="eq-card-header">
+            <div class="eq-icon">${eq.emoji || '🏗️'}</div>
+            <div class="eq-avail ${avail ? 'available' : 'unavailable-label'}">
+              <div class="eq-avail-dot ${avail ? '' : 'busy'}"></div>
+              ${avail ? 'Available' : 'Unavailable'}
+            </div>
+          </div>
+          <div class="eq-card-body">
+            <div class="eq-category">${eq.category || ''}</div>
+            <div class="eq-name">${eq.name}</div>
+            <div class="eq-desc">${eq.description || ''}</div>
+            <div class="eq-rate">
+              <span class="eq-rate-amount">$${eq.dailyRate || 0}</span>
+              <span class="eq-rate-label">/ day</span>
+            </div>
+            <button class="eq-select-btn" id="btn-${eq.id}" ${avail ? '' : 'disabled'}>
+              ${avail ? 'Select & Book' : 'Unavailable'}
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+ 
+  // ── SELECT EQUIPMENT ──
+  window.selectEquipment = async function(id) {
+    const eq = allEquipment.find(e => e.id === id);
+    if (!eq) return;
+ 
+    // deselect all
+    allEquipment.forEach(e => {
+      const card = document.getElementById(`card-${e.id}`);
+      const btn  = document.getElementById(`btn-${e.id}`);
+      if (card) card.classList.remove('selected');
+      if (btn)  { btn.textContent = 'Select & Book'; btn.classList.remove('deselect'); }
+    });
+ 
+    if (selectedEq && selectedEq.id === id) {
+      selectedEq = null;
+      closeBooking();
+      return;
+    }
+ 
+    selectedEq = eq;
+    document.getElementById(`card-${id}`).classList.add('selected');
+    const btn = document.getElementById(`btn-${id}`);
+    btn.textContent = '✓ Selected';
+    btn.classList.add('deselect');
+ 
+    // load booked ranges for this equipment
+    await loadBookedRanges(id);
+ 
+    // update form
+    document.getElementById('form-eq-name').textContent = eq.name;
+    document.getElementById('form-eq-rate').textContent = `$${eq.dailyRate}/day`;
+    document.getElementById('booking-header-text').textContent = `Reserve — ${eq.name}`;
+ 
+    // reset date picks
+    pickStart = null; pickEnd = null; pickingEnd = false;
+    updateDateDisplays();
+    updateTotal();
+ 
+    // show panel
+    document.getElementById('booking-panel').style.display = 'block';
+    document.getElementById('booking-panel').scrollIntoView({ behavior:'smooth', block:'start' });
+ 
+    renderCalendar();
+  };
+ 
+  // ── CLOSE BOOKING ──
+  window.closeBooking = function() {
+    document.getElementById('booking-panel').style.display = 'none';
+    allEquipment.forEach(e => {
+      const card = document.getElementById(`card-${e.id}`);
+      const btn  = document.getElementById(`btn-${e.id}`);
+      if (card) card.classList.remove('selected');
+      if (btn && e.available !== false) { btn.textContent = 'Select & Book'; btn.classList.remove('deselect'); }
+    });
+    selectedEq = null;
+    pickStart = null; pickEnd = null;
+  };
+ 
+  // ── LOAD BOOKED RANGES ──
+  async function loadBookedRanges(equipmentId) {
+    bookedRanges = [];
+    try {
+      const q = query(
+        collection(db, 'reservations'),
+        where('equipmentId', '==', equipmentId),
+        where('status', 'in', ['pending','confirmed'])
+      );
+      const snap = await getDocs(q);
+      snap.forEach(doc => {
+        const d = doc.data();
+        bookedRanges.push({
+          start:  d.startDate.toDate(),
+          end:    d.endDate.toDate(),
+          status: d.status
+        });
+      });
+    } catch(e) { console.warn('Could not load bookings:', e); }
+  }
+ 
+  // ── CALENDAR ──
+  window.changeMonth = function(dir) {
+    calMonth += dir;
+    if (calMonth > 11) { calMonth = 0; calYear++; }
+    if (calMonth < 0)  { calMonth = 11; calYear--; }
+    renderCalendar();
+  };
+ 
+  function renderCalendar() {
+    document.getElementById('cal-month-label').textContent = `${MONTHS[calMonth]} ${calYear}`;
+    const grid = document.getElementById('cal-grid');
+    grid.innerHTML = '';
+ 
+    // day-of-week headers
+    DAYS_OF_WEEK.forEach(d => {
+      const el = document.createElement('div');
+      el.className = 'cal-dow';
+      el.textContent = d;
+      grid.appendChild(el);
+    });
+ 
+    const firstDay   = new Date(calYear, calMonth, 1).getDay();
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    const today      = new Date(); today.setHours(0,0,0,0);
+ 
+    // empty cells
+    for (let i = 0; i < firstDay; i++) {
+      const el = document.createElement('div');
+      el.className = 'cal-day empty';
+      grid.appendChild(el);
+    }
+ 
+    for (let d = 1; d <= daysInMonth; d++) {
+      const date = new Date(calYear, calMonth, d);
+      date.setHours(0,0,0,0);
+      const el = document.createElement('div');
+      el.className = 'cal-day';
+      el.textContent = d;
+ 
+      if (date < today) {
+        el.classList.add('disabled');
+      } else if (isBooked(date, 'confirmed')) {
+        el.classList.add('booked');
+      } else if (isBooked(date, 'pending')) {
+        el.classList.add('pending-day');
+      } else {
+        el.classList.add('available-day');
+        el.onclick = () => handleDayClick(date, el);
+      }
+ 
+      if (date.toDateString() === today.toDateString()) el.classList.add('today');
+ 
+      // highlight selected range
+      if (pickStart && date.toDateString() === pickStart.toDateString()) el.classList.add('selected-start');
+      if (pickEnd   && date.toDateString() === pickEnd.toDateString())   el.classList.add('selected-end');
+      if (pickStart && pickEnd && date > pickStart && date < pickEnd)    el.classList.add('in-range');
+ 
+      grid.appendChild(el);
+    }
+  }
+ 
+  function isBooked(date, status) {
+    return bookedRanges.some(r =>
+      r.status === status &&
+      date >= new Date(r.start.setHours(0,0,0,0)) &&
+      date <= new Date(r.end.setHours(0,0,0,0))
+    );
+  }
+ 
+  function handleDayClick(date) {
+    if (!pickStart || (pickStart && pickEnd)) {
+      pickStart = date; pickEnd = null; pickingEnd = true;
+    } else if (pickingEnd) {
+      if (date < pickStart) { pickStart = date; pickEnd = null; return; }
+      pickEnd = date; pickingEnd = false;
+    }
+    updateDateDisplays();
+    updateTotal();
+    renderCalendar();
+  }
+ 
+  function updateDateDisplays() {
+    const s = document.getElementById('display-start');
+    const e = document.getElementById('display-end');
+    if (pickStart) { s.textContent = formatDate(pickStart); s.classList.add('filled'); }
+    else           { s.textContent = 'Pick on calendar'; s.classList.remove('filled'); }
+    if (pickEnd)   { e.textContent = formatDate(pickEnd);   e.classList.add('filled'); }
+    else           { e.textContent = 'Pick on calendar'; e.classList.remove('filled'); }
+  }
+ 
+  function updateTotal() {
+    const el = document.getElementById('est-total-display');
+    if (pickStart && pickEnd && selectedEq) {
+      const days = Math.round((pickEnd - pickStart) / (1000*60*60*24)) + 1;
+      const total = days * (selectedEq.dailyRate || 0);
+      el.textContent = `$${total.toLocaleString()} (${days} day${days>1?'s':''})`;
+    } else {
+      el.textContent = '—';
+    }
+  }
+ 
+  function formatDate(d) {
+    return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  }
+ 
+  // ── SUBMIT BOOKING ──
+  window.submitBooking = async function() {
+    const name  = document.getElementById('f-name').value.trim();
+    const phone = document.getElementById('f-phone').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    const notes = document.getElementById('f-notes').value.trim();
+ 
+    if (!name || !phone || !email) { showToast('Please fill in all required fields.', true); return; }
+    if (!pickStart || !pickEnd)    { showToast('Please select your rental dates on the calendar.', true); return; }
+    if (!selectedEq)               { showToast('No equipment selected.', true); return; }
+ 
+    const days  = Math.round((pickEnd - pickStart) / (1000*60*60*24)) + 1;
+    const total = days * (selectedEq.dailyRate || 0);
+ 
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Submitting...';
+ 
+    try {
+      // write to Firebase
+      await addDoc(collection(db, 'reservations'), {
+        equipmentId:    selectedEq.id,
+        equipmentName:  selectedEq.name,
+        customerName:   name,
+        customerPhone:  phone,
+        customerEmail:  email,
+        customerNotes:  notes,
+        startDate:      Timestamp.fromDate(pickStart),
+        endDate:        Timestamp.fromDate(pickEnd),
+        days:           days,
+        estimatedTotal: total,
+        actualPaid:     0,
+        status:         'pending',
+        createdAt:      Timestamp.now()
+      });
+ 
+      // send emails via EmailJS
+      const params = {
+        equipment_name:  selectedEq.name,
+        customer_name:   name,
+        customer_phone:  phone,
+        customer_email:  email,
+        start_date:      formatDate(pickStart),
+        end_date:        formatDate(pickEnd),
+        estimated_total: `$${total.toLocaleString()}`,
+        customer_notes:  notes || 'None'
+      };
+ 
+      await emailjs.send('service_4a6soso', 'template_rlofapn', params);  // notify owner
+      await emailjs.send('service_4a6soso', 'template_2hvmlea', params);  // confirm customer
+ 
+      // redirect to confirmation
+      const p = new URLSearchParams({
+        name, equipment: selectedEq.name,
+        start: formatDate(pickStart), end: formatDate(pickEnd),
+        total: total
+      });
+      window.location.href = `confirmation.html?${p.toString()}`;
+ 
+    } catch(err) {
+      console.error(err);
+      btn.disabled = false;
+      btn.innerHTML = 'Request Reservation';
+      showToast('Something went wrong. Please try again or email us directly.', true);
+    }
+  };
+ 
+  // ── TOAST ──
+  window.showToast = function(msg, isError=false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast' + (isError ? ' error' : '');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3500);
+  };
+ 
+  // ── INIT ──
+  loadEquipment();
+  renderCalendar();
+</script>
+ 
+<!-- EMAILJS -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>emailjs.init('1r8AlMuY3PpUaYgjn');</script>
+ 
+</body>
+</html>
