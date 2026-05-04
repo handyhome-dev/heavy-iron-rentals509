@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reservation Received | Heavy Iron Rentals</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --black:     #0D0D0D;
+      --iron:      #161616;
+      --steel:     #222222;
+      --plate:     #2E2E2E;
+      --smoke:     #666;
+      --ash:       #999;
+      --chalk:     #DEDBD5;
+      --white:     #F5F2ED;
+      --orange:    #E8500A;
+      --orange-dk: #B83D08;
+      --yellow:    #F0B429;
+      --green:     #22C55E;
+    }
+ 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--black);
+      color: var(--chalk);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+ 
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+ 
+    /* NAV */
+    nav {
+      position: relative;
+      z-index: 10;
+      background: rgba(13,13,13,0.95);
+      border-bottom: 2px solid var(--orange);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 64px;
+    }
+    .logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.6rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .logo span { color: var(--orange); }
+ 
+    /* MAIN */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+ 
+    .confirm-card {
+      width: 100%;
+      max-width: 580px;
+      animation: fadeUp 0.4s ease;
+    }
+ 
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+ 
+    /* CHECK MARK */
+    .check-wrap {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .check-circle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: rgba(34,197,94,0.1);
+      border: 2px solid var(--green);
+      font-size: 2rem;
+      color: var(--green);
+      box-shadow: 0 0 24px rgba(34,197,94,0.2);
+    }
+ 
+    /* HEADLINE */
+    .confirm-headline {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .confirm-headline h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 2.8rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--white);
+      line-height: 1;
+    }
+    .confirm-headline h1 span { color: var(--green); }
+    .confirm-headline p {
+      margin-top: 0.75rem;
+      color: var(--ash);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .confirm-headline .customer-name {
+      color: var(--orange);
+      font-weight: 600;
+    }
+ 
+    /* DETAILS BLOCK */
+    .details-block {
+      background: var(--iron);
+      border: 1.5px solid var(--plate);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+    .details-header {
+      background: var(--steel);
+      padding: 0.75rem 1.25rem;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--ash);
+    }
+    .details-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem 1.25rem;
+      border-bottom: 1px solid var(--plate);
+      font-size: 0.9rem;
+    }
+    .details-row:last-child { border-bottom: none; }
+    .details-label {
+      color: var(--ash);
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+    .details-value {
+      color: var(--white);
+      font-weight: 600;
+      text-align: right;
+    }
+    .details-value.highlight {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--yellow);
+    }
+ 
+    /* VENMO BLOCK */
+    .venmo-block {
+      background: var(--iron);
+      border: 1.5px solid #008CFF;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+    .venmo-header {
+      background: #008CFF;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+    .venmo-body { padding: 1.25rem; }
+    .venmo-instruction {
+      font-size: 0.85rem;
+      color: var(--ash);
+      margin-bottom: 1rem;
+      line-height: 1.6;
+    }
+    .venmo-detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--plate);
+      font-size: 0.88rem;
+    }
+    .venmo-detail-row:last-child { border-bottom: none; }
+    .venmo-detail-label { color: var(--ash); }
+    .venmo-detail-value {
+      color: var(--white);
+      font-weight: 700;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+    }
+    .venmo-detail-value.handle { color: #008CFF; }
+    .venmo-detail-value.amount { color: var(--yellow); font-size: 1.2rem; }
+ 
+    .venmo-btn {
+      display: block;
+      width: 100%;
+      margin-top: 1rem;
+      padding: 0.8rem;
+      background: #008CFF;
+      color: var(--white);
+      border: none;
+      border-radius: 2px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .venmo-btn:hover { background: #0070CC; }
+ 
+    /* NEXT STEPS */
+    .next-steps {
+      background: var(--iron);
+      border: 1.5px solid var(--plate);
+      border-radius: 4px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    .next-steps-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--ash);
+      margin-bottom: 0.875rem;
+    }
+    .next-step-item {
+      display: flex;
+      gap: 0.875rem;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--ash);
+      line-height: 1.5;
+    }
+    .next-step-item:last-child { margin-bottom: 0; }
+    .step-num {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--orange);
+      color: var(--white);
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 0.1rem;
+    }
+ 
+    /* BACK LINK */
+    .back-wrap {
+      text-align: center;
+      padding-bottom: 1rem;
+    }
+    .back-link {
+      color: var(--ash);
+      text-decoration: none;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--orange); }
+ 
+    /* FOOTER */
+    footer {
+      position: relative;
+      z-index: 1;
+      border-top: 1px solid var(--plate);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      color: var(--smoke);
+      font-size: 0.78rem;
+      letter-spacing: 0.5px;
+    }
+    footer a {
+      color: var(--orange);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+ 
+<nav>
+  <a href="index.html" class="logo">Heavy <span>Iron</span> Rentals</a>
+</nav>
+ 
+<main>
+  <div class="confirm-card">
+ 
+    <!-- CHECK -->
+    <div class="check-wrap">
+      <div class="check-circle">✓</div>
+    </div>
+ 
+    <!-- HEADLINE -->
+    <div class="confirm-headline">
+      <h1>Request <span>Received</span></h1>
+      <p>Thanks, <span class="customer-name" id="c-name">—</span>! Your reservation request has been submitted. Check your email for details and complete your payment below to lock in your dates.</p>
+    </div>
+ 
+    <!-- RESERVATION DETAILS -->
+    <div class="details-block">
+      <div class="details-header">Reservation Summary</div>
+      <div class="details-row">
+        <span class="details-label">Equipment</span>
+        <span class="details-value" id="c-equipment">—</span>
+      </div>
+      <div class="details-row">
+        <span class="details-label">Start Date</span>
+        <span class="details-value" id="c-start">—</span>
+      </div>
+      <div class="details-row">
+        <span class="details-label">End Date</span>
+        <span class="details-value" id="c-end">—</span>
+      </div>
+      <div class="details-row">
+        <span class="details-label">Estimated Total</span>
+        <span class="details-value highlight" id="c-total">—</span>
+      </div>
+    </div>
+ 
+    <!-- VENMO PAYMENT -->
+    <div class="venmo-block">
+      <div class="venmo-header">
+        💙 Pay Via Venmo to Confirm
+      </div>
+      <div class="venmo-body">
+        <p class="venmo-instruction">Send payment now to secure your reservation. Your dates will be confirmed once payment is received and verified.</p>
+        <div class="venmo-detail-row">
+          <span class="venmo-detail-label">Venmo Handle</span>
+          <span class="venmo-detail-value handle">@Steve-Jones-274</span>
+        </div>
+        <div class="venmo-detail-row">
+          <span class="venmo-detail-label">Amount</span>
+          <span class="venmo-detail-value amount" id="v-amount">—</span>
+        </div>
+        <div class="venmo-detail-row">
+          <span class="venmo-detail-label">Payment Note</span>
+          <span class="venmo-detail-value" id="v-note">—</span>
+        </div>
+        <a class="venmo-btn" id="venmo-link" href="#" target="_blank">Open Venmo →</a>
+      </div>
+    </div>
+ 
+    <!-- NEXT STEPS -->
+    <div class="next-steps">
+      <div class="next-steps-title">What Happens Next</div>
+      <div class="next-step-item">
+        <div class="step-num">1</div>
+        <span>Send your Venmo payment using the details above. Use the note shown so your payment is matched to your reservation.</span>
+      </div>
+      <div class="next-step-item">
+        <div class="step-num">2</div>
+        <span>Once payment is received, you'll get a confirmation email and your dates will be locked in.</span>
+      </div>
+      <div class="next-step-item">
+        <div class="step-num">3</div>
+        <span>Questions? Email us at <a href="mailto:heavyironrentals509@gmail.com" style="color:var(--orange);">heavyironrentals509@gmail.com</a> and we'll get back to you quickly.</span>
+      </div>
+    </div>
+ 
+    <!-- BACK -->
+    <div class="back-wrap">
+      <a href="index.html" class="back-link">← Back to Equipment</a>
+    </div>
+ 
+  </div>
+</main>
+ 
+<footer>
+  <strong style="color:var(--ash);">Heavy Iron Rentals</strong> · Spokane, WA · 509 Area ·
+  <a href="mailto:heavyironrentals509@gmail.com">heavyironrentals509@gmail.com</a>
+</footer>
+ 
+<script>
+  // Pull params from URL
+  const params = new URLSearchParams(window.location.search);
+  const name      = params.get('name')      || 'there';
+  const equipment = params.get('equipment') || '—';
+  const start     = params.get('start')     || '—';
+  const end       = params.get('end')       || '—';
+  const total     = params.get('total')     || '0';
+ 
+  // Populate details
+  document.getElementById('c-name').textContent      = name;
+  document.getElementById('c-equipment').textContent = equipment;
+  document.getElementById('c-start').textContent     = start;
+  document.getElementById('c-end').textContent       = end;
+  document.getElementById('c-total').textContent     = `$${Number(total).toLocaleString()}`;
+ 
+  // Venmo
+  const venmoNote = `${equipment} rental ${start}`;
+  document.getElementById('v-amount').textContent    = `$${Number(total).toLocaleString()}`;
+  document.getElementById('v-note').textContent      = venmoNote;
+ 
+  // Venmo deep link
+  const venmoURL = `https://venmo.com/Steve-Jones-274?txn=pay&amount=${total}&note=${encodeURIComponent(venmoNote)}`;
+  document.getElementById('venmo-link').href = venmoURL;
+</script>
+ 
+</body>
+</html>
+ 
