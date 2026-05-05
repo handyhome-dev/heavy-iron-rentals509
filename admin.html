@@ -1027,36 +1027,36 @@
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
  
+ 
 <!-- FIREBASE -->
 <script type="module">
-  import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, query, where, orderBy, Timestamp }
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, addDoc, updateDoc, doc, Timestamp }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
  
   // ── REPLACE WITH YOUR FIREBASE CONFIG ──
   const firebaseConfig = {
-  apiKey: "AIzaSyAuBEw5APb0-G74XNaHfjeWW-NfeYtqNrM",
-  authDomain: "heavy-iron-rentals.firebaseapp.com",
-  projectId: "heavy-iron-rentals",
-  storageBucket: "heavy-iron-rentals.firebasestorage.app",
-  messagingSenderId: "864017716659",
-  appId: "1:864017716659:web:3921c363418fbc25c967c6",
-  measurementId: "G-D33NYL95GY"
-};
+    apiKey:            "YOUR_API_KEY",
+    authDomain:        "YOUR_AUTH_DOMAIN",
+    projectId:         "YOUR_PROJECT_ID",
+    storageBucket:     "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId:             "YOUR_APP_ID"
+  };
  
   const app = initializeApp(firebaseConfig);
   const db  = getFirestore(app);
  
-  // ── STATE ──
-  let allReservations  = [];
-  let allEquipment     = [];
-  let allCancellations = [];
-  let pendingAction    = null;  // { id, type: 'confirm' | 'cancel' }
-  let editingEqId      = null;
-  let sortKey          = 'startDate';
-  let sortDir          = 1;
-  let sortKeyC         = 'cancelledAt';
-  let sortDirC         = -1;
+  // ── STATE — all on window so inline onclick handlers share scope ──
+  window.allReservations  = [];
+  window.allEquipment     = [];
+  window.allCancellations = [];
+  window.pendingAction    = null;
+  window.editingEqId      = null;
+  window.sortKey          = 'startDate';
+  window.sortDir          = 1;
+  window.sortKeyC         = 'cancelledAt';
+  window.sortDirC         = -1;
  
   // ── LOGIN ──
   window.doLogin = function() {
@@ -1080,13 +1080,13 @@
   // ── TABS ──
   window.switchTab = function(tab) {
     document.querySelectorAll('.tab-btn').forEach((b,i) => {
-      b.classList.toggle('active', (i === 0 && tab === 'operations') || (i === 1 && tab === 'management'));
+      b.classList.toggle('active', (i===0 && tab==='operations') || (i===1 && tab==='management'));
     });
-    document.getElementById('tab-operations').classList.toggle('active', tab === 'operations');
-    document.getElementById('tab-management').classList.toggle('active', tab === 'management');
+    document.getElementById('tab-operations').classList.toggle('active', tab==='operations');
+    document.getElementById('tab-management').classList.toggle('active', tab==='management');
   };
  
-  // ── LOAD ALL DATA ──
+  // ── LOAD ALL ──
   async function loadAll() {
     await Promise.all([loadEquipment(), loadReservations()]);
     renderStats();
@@ -1100,36 +1100,34 @@
  
   async function loadEquipment() {
     const snap = await getDocs(collection(db, 'equipment'));
-    allEquipment = [];
-    snap.forEach(d => allEquipment.push({ id: d.id, ...d.data() }));
+    window.allEquipment = [];
+    snap.forEach(d => window.allEquipment.push({ id: d.id, ...d.data() }));
   }
  
   async function loadReservations() {
     const snap = await getDocs(collection(db, 'reservations'));
-    allReservations  = [];
-    allCancellations = [];
+    window.allReservations  = [];
+    window.allCancellations = [];
     snap.forEach(d => {
       const r = { id: d.id, ...d.data() };
-      if (r.status === 'cancelled') allCancellations.push(r);
-      else allReservations.push(r);
+      if (r.status === 'cancelled') window.allCancellations.push(r);
+      else window.allReservations.push(r);
     });
   }
  
   // ── STATS ──
   function renderStats() {
-    const pending   = allReservations.filter(r => r.status === 'pending');
-    const confirmed = allReservations.filter(r => r.status === 'confirmed');
+    const pending   = window.allReservations.filter(r => r.status === 'pending');
+    const confirmed = window.allReservations.filter(r => r.status === 'confirmed');
     const now       = new Date();
     const thisMonth = confirmed.filter(r => {
-      const d = r.startDate?.toDate?.() || new Date(r.startDate);
+      const d = getDate(r.startDate);
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
     });
- 
     document.getElementById('stat-pending').textContent   = pending.length;
     document.getElementById('stat-confirmed').textContent = thisMonth.length;
- 
-    const potential = pending.reduce((s,r) => s + (r.estimatedTotal || 0), 0);
-    const actual    = confirmed.reduce((s,r) => s + (r.actualPaid || 0), 0);
+    const potential = pending.reduce((s,r) => s + (r.estimatedTotal||0), 0);
+    const actual    = confirmed.reduce((s,r) => s + (r.actualPaid||0), 0);
     document.getElementById('stat-potential').textContent = `$${potential.toLocaleString()}`;
     document.getElementById('stat-actual').textContent    = `$${actual.toLocaleString()}`;
   }
@@ -1137,85 +1135,75 @@
   // ── 3-DAY VIEW ──
   function renderThreeDay() {
     const today    = new Date(); today.setHours(0,0,0,0);
-    const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
-    const dayAfter = new Date(today); dayAfter.setDate(today.getDate() + 2);
- 
-    const labels = ['Today', 'Tomorrow', 'Day After'];
-    const dates  = [today, tomorrow, dayAfter];
-    const grid   = document.getElementById('three-day-grid');
+    const tomorrow = new Date(today); tomorrow.setDate(today.getDate()+1);
+    const dayAfter = new Date(today); dayAfter.setDate(today.getDate()+2);
+    const labels   = ['Today','Tomorrow','Day After'];
+    const dates    = [today, tomorrow, dayAfter];
+    const grid     = document.getElementById('three-day-grid');
     grid.innerHTML = '';
  
     dates.forEach((date, idx) => {
-      const dateStr = date.toLocaleDateString('en-US', { month:'short', day:'numeric' });
-      const reses   = allReservations.filter(r => {
+      const dateStr = date.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+      const reses   = window.allReservations.filter(r => {
         if (r.status === 'cancelled') return false;
-        const s = r.startDate?.toDate?.() || new Date(r.startDate);
-        const e = r.endDate?.toDate?.()   || new Date(r.endDate);
+        const s = getDate(r.startDate); const e = getDate(r.endDate);
         s.setHours(0,0,0,0); e.setHours(0,0,0,0);
         return date >= s && date <= e;
       });
- 
       let chipsHTML = '';
       if (!reses.length) {
         chipsHTML = '<div class="day-tile-empty">Nothing scheduled</div>';
       } else {
         reses.forEach(r => {
-          const s = r.startDate?.toDate?.() || new Date(r.startDate);
-          const e = r.endDate?.toDate?.()   || new Date(r.endDate);
+          const s = getDate(r.startDate); const e = getDate(r.endDate);
           s.setHours(0,0,0,0); e.setHours(0,0,0,0);
           let type = 'in-use', tag = 'In Use';
-          if (date.getTime() === s.getTime()) { type = 'new-out';   tag = 'New Out'; }
-          if (date.getTime() === e.getTime()) { type = 'returning'; tag = 'Returning'; }
-          chipsHTML += `
-            <div class="res-chip ${type}">
-              <div><span class="res-chip-tag">${tag}</span></div>
-              <div class="res-chip-eq">${r.equipmentName || '—'}</div>
-              <div class="res-chip-name">${r.customerName || '—'}</div>
-            </div>`;
+          if (date.getTime()===s.getTime()) { type='new-out';   tag='New Out'; }
+          if (date.getTime()===e.getTime()) { type='returning'; tag='Returning'; }
+          chipsHTML += `<div class="res-chip ${type}">
+            <div><span class="res-chip-tag">${tag}</span></div>
+            <div class="res-chip-eq">${r.equipmentName||'—'}</div>
+            <div class="res-chip-name">${r.customerName||'—'}</div>
+          </div>`;
         });
       }
- 
-      grid.innerHTML += `
-        <div class="day-tile">
-          <div class="day-tile-header">
-            <span class="day-tile-label">${labels[idx]}</span>
-            <span class="day-tile-date">${dateStr}</span>
-          </div>
-          <div class="day-tile-body">${chipsHTML}</div>
-        </div>`;
+      grid.innerHTML += `<div class="day-tile">
+        <div class="day-tile-header">
+          <span class="day-tile-label">${labels[idx]}</span>
+          <span class="day-tile-date">${dateStr}</span>
+        </div>
+        <div class="day-tile-body">${chipsHTML}</div>
+      </div>`;
     });
   }
  
   // ── PENDING LIST ──
   function renderPending() {
     const list    = document.getElementById('pending-list');
-    const pending = allReservations.filter(r => r.status === 'pending');
+    const pending = window.allReservations.filter(r => r.status === 'pending');
     if (!pending.length) {
       list.innerHTML = '<div class="empty-state">No pending reservations</div>';
       return;
     }
-    list.innerHTML = pending.map(r => {
-      const s = fmtDate(r.startDate); const e = fmtDate(r.endDate);
-      return `
-        <div class="pending-card" id="pc-${r.id}">
-          <div class="pending-info">
-            <div class="pending-eq">${r.equipmentName || '—'}</div>
-            <div class="pending-customer">${r.customerName || '—'} · ${r.customerPhone || ''} · ${r.customerEmail || ''}</div>
-            <div class="pending-dates">${s} → ${e}${r.customerNotes ? ' · ' + r.customerNotes : ''}</div>
-          </div>
-          <div class="pending-est">$${(r.estimatedTotal || 0).toLocaleString()}</div>
-          <div class="pending-actions">
-            <button class="confirm-btn" onclick="openConfirmModal('${r.id}')">✓ Confirm</button>
-            <button class="cancel-btn"  onclick="openCancelModal('${r.id}')">✕</button>
-          </div>
-        </div>`;
-    }).join('');
+    list.innerHTML = pending.map(r => `
+      <div class="pending-card" id="pc-${r.id}">
+        <div class="pending-info">
+          <div class="pending-eq">${r.equipmentName||'—'}</div>
+          <div class="pending-customer">${r.customerName||'—'} · ${r.customerPhone||''} · ${r.customerEmail||''}</div>
+          <div class="pending-dates">${fmtDate(r.startDate)} → ${fmtDate(r.endDate)}${r.customerNotes?' · '+r.customerNotes:''}</div>
+        </div>
+        <div class="pending-est">$${(r.estimatedTotal||0).toLocaleString()}</div>
+        <div class="pending-actions">
+          <button class="confirm-btn" onclick="openConfirmModal('${r.id}')">✓ Confirm</button>
+          <button class="cancel-btn"  onclick="openCancelModal('${r.id}')">✕</button>
+        </div>
+      </div>`).join('');
   }
  
   // ── CONFIRM MODAL ──
   window.openConfirmModal = function(id) {
-    pendingAction = { id, type: 'confirm' };
-    const r = allReservations.find(x => x.id === id);
+    window.pendingAction = { id, type: 'confirm' };
+    const r = window.allReservations.find(x => x.id === id);
     document.getElementById('confirm-modal-sub').textContent =
       `${r?.equipmentName} — ${r?.customerName}. Estimated: $${(r?.estimatedTotal||0).toLocaleString()}. Enter actual amount received.`;
     document.getElementById('actual-paid-input').value = r?.estimatedTotal || '';
@@ -1224,24 +1212,23 @@
  
   window.confirmReservation = async function() {
     const paid = parseFloat(document.getElementById('actual-paid-input').value) || 0;
-    if (!pendingAction) return;
+    if (!window.pendingAction) return;
     try {
-      await updateDoc(doc(db, 'reservations', pendingAction.id), {
+      await updateDoc(doc(db, 'reservations', window.pendingAction.id), {
         status: 'confirmed', actualPaid: paid
       });
-      const idx = allReservations.findIndex(r => r.id === pendingAction.id);
-      if (idx > -1) allReservations[idx].status = 'confirmed';
-      if (idx > -1) allReservations[idx].actualPaid = paid;
+      const idx = window.allReservations.findIndex(r => r.id === window.pendingAction.id);
+      if (idx > -1) { window.allReservations[idx].status = 'confirmed'; window.allReservations[idx].actualPaid = paid; }
       closeModal('confirm-modal');
       renderStats(); renderThreeDay(); renderPending(); renderReservationsTable();
       showToast('Reservation confirmed!', 'success');
-    } catch(e) { showToast('Error confirming. Try again.', 'error'); }
+    } catch(e) { console.error(e); showToast('Error confirming. Try again.', 'error'); }
   };
  
   // ── CANCEL MODAL ──
   window.openCancelModal = function(id) {
-    pendingAction = { id, type: 'cancel' };
-    const r = allReservations.find(x => x.id === id) || allCancellations.find(x => x.id === id);
+    window.pendingAction = { id, type: 'cancel' };
+    const r = window.allReservations.find(x => x.id===id) || window.allCancellations.find(x => x.id===id);
     document.getElementById('cancel-modal-sub').textContent =
       `Cancel reservation for ${r?.equipmentName} — ${r?.customerName}?`;
     document.getElementById('cancel-notes-input').value = '';
@@ -1250,128 +1237,119 @@
  
   window.cancelReservation = async function() {
     const notes = document.getElementById('cancel-notes-input').value.trim();
-    if (!pendingAction) return;
+    if (!window.pendingAction) return;
     try {
-      await updateDoc(doc(db, 'reservations', pendingAction.id), {
+      await updateDoc(doc(db, 'reservations', window.pendingAction.id), {
         status: 'cancelled', cancelNotes: notes, cancelledAt: Timestamp.now()
       });
-      const r = allReservations.find(x => x.id === pendingAction.id);
+      const r = window.allReservations.find(x => x.id===window.pendingAction.id);
       if (r) {
-        r.status = 'cancelled'; r.cancelNotes = notes; r.cancelledAt = Timestamp.now();
-        allReservations = allReservations.filter(x => x.id !== pendingAction.id);
-        allCancellations.push(r);
+        r.status='cancelled'; r.cancelNotes=notes; r.cancelledAt=Timestamp.now();
+        window.allReservations = window.allReservations.filter(x => x.id!==window.pendingAction.id);
+        window.allCancellations.push(r);
       }
       closeModal('cancel-modal');
       renderStats(); renderThreeDay(); renderPending();
       renderReservationsTable(); renderCancellationsTable();
       showToast('Reservation cancelled.', 'success');
-    } catch(e) { showToast('Error cancelling. Try again.', 'error'); }
+    } catch(e) { console.error(e); showToast('Error cancelling. Try again.', 'error'); }
   };
  
   // ── RESERVATIONS TABLE ──
   function renderReservationsTable() {
-    const search    = document.getElementById('res-search')?.value.toLowerCase()    || '';
-    const eqFilter  = document.getElementById('res-eq-filter')?.value               || '';
-    const dateFilter= document.getElementById('res-date-filter')?.value             || '';
-    const now       = new Date(); now.setHours(0,0,0,0);
-    const monthStart= new Date(now.getFullYear(), now.getMonth(), 1);
-    const monthEnd  = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const search     = document.getElementById('res-search')?.value.toLowerCase() || '';
+    const eqFilter   = document.getElementById('res-eq-filter')?.value            || '';
+    const dateFilter = document.getElementById('res-date-filter')?.value          || '';
+    const now        = new Date(); now.setHours(0,0,0,0);
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthEnd   = new Date(now.getFullYear(), now.getMonth()+1, 0);
  
-    let rows = allReservations.filter(r => r.status === 'confirmed');
- 
+    let rows = window.allReservations.filter(r => r.status==='confirmed');
     if (search)    rows = rows.filter(r => (r.customerName||'').toLowerCase().includes(search));
-    if (eqFilter)  rows = rows.filter(r => r.equipmentName === eqFilter);
-    if (dateFilter === 'upcoming')  rows = rows.filter(r => getDate(r.startDate) >= now);
-    if (dateFilter === 'past')      rows = rows.filter(r => getDate(r.endDate)   <  now);
-    if (dateFilter === 'thismonth') rows = rows.filter(r => {
-      const d = getDate(r.startDate);
-      return d >= monthStart && d <= monthEnd;
-    });
+    if (eqFilter)  rows = rows.filter(r => r.equipmentName===eqFilter);
+    if (dateFilter==='upcoming')  rows = rows.filter(r => getDate(r.startDate) >= now);
+    if (dateFilter==='past')      rows = rows.filter(r => getDate(r.endDate)   <  now);
+    if (dateFilter==='thismonth') rows = rows.filter(r => { const d=getDate(r.startDate); return d>=monthStart && d<=monthEnd; });
  
     rows.sort((a,b) => {
-      let av = a[sortKey], bv = b[sortKey];
-      if (sortKey === 'startDate' || sortKey === 'endDate') { av = getDate(av); bv = getDate(bv); }
-      if (av < bv) return -sortDir; if (av > bv) return sortDir; return 0;
+      let av=a[window.sortKey], bv=b[window.sortKey];
+      if (['startDate','endDate'].includes(window.sortKey)) { av=getDate(av); bv=getDate(bv); }
+      if (av<bv) return -window.sortDir; if (av>bv) return window.sortDir; return 0;
     });
  
     const tbody = document.getElementById('res-table-body');
-    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state">No confirmed reservations</div></td></tr>'; return; }
-    tbody.innerHTML = rows.map(r => `
-      <tr>
-        <td>${r.customerName||'—'}</td>
-        <td>${r.equipmentName||'—'}</td>
-        <td>${fmtDate(r.startDate)}</td>
-        <td>${fmtDate(r.endDate)}</td>
-        <td style="color:var(--yellow);">$${(r.estimatedTotal||0).toLocaleString()}</td>
-        <td style="color:var(--green);">$${(r.actualPaid||0).toLocaleString()}</td>
-        <td>${r.customerPhone||'—'}</td>
-        <td><button class="tbl-cancel-btn" onclick="openCancelModal('${r.id}')">Cancel</button></td>
-      </tr>`).join('');
+    if (!rows.length) { tbody.innerHTML='<tr><td colspan="8"><div class="empty-state">No confirmed reservations</div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => `<tr>
+      <td>${r.customerName||'—'}</td>
+      <td>${r.equipmentName||'—'}</td>
+      <td>${fmtDate(r.startDate)}</td>
+      <td>${fmtDate(r.endDate)}</td>
+      <td style="color:var(--yellow);">$${(r.estimatedTotal||0).toLocaleString()}</td>
+      <td style="color:var(--green);">$${(r.actualPaid||0).toLocaleString()}</td>
+      <td>${r.customerPhone||'—'}</td>
+      <td><button class="tbl-cancel-btn" onclick="openCancelModal('${r.id}')">Cancel</button></td>
+    </tr>`).join('');
   }
  
   window.filterReservations = renderReservationsTable;
- 
   window.sortTable = function(key) {
-    if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
+    if (window.sortKey===key) window.sortDir*=-1; else { window.sortKey=key; window.sortDir=1; }
     renderReservationsTable();
   };
  
   // ── CANCELLATIONS TABLE ──
   function renderCancellationsTable() {
-    const search    = document.getElementById('can-search')?.value.toLowerCase()    || '';
-    const eqFilter  = document.getElementById('can-eq-filter')?.value               || '';
-    const dateFilter= document.getElementById('can-date-filter')?.value             || '';
-    const now       = new Date(); now.setHours(0,0,0,0);
-    const monthStart= new Date(now.getFullYear(), now.getMonth(), 1);
-    const monthEnd  = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    const search     = document.getElementById('can-search')?.value.toLowerCase() || '';
+    const eqFilter   = document.getElementById('can-eq-filter')?.value            || '';
+    const dateFilter = document.getElementById('can-date-filter')?.value          || '';
+    const now        = new Date(); now.setHours(0,0,0,0);
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const monthEnd   = new Date(now.getFullYear(), now.getMonth()+1, 0);
  
-    let rows = [...allCancellations];
+    let rows = [...window.allCancellations];
     if (search)    rows = rows.filter(r => (r.customerName||'').toLowerCase().includes(search));
-    if (eqFilter)  rows = rows.filter(r => r.equipmentName === eqFilter);
-    if (dateFilter === 'thismonth') rows = rows.filter(r => {
-      const d = getDate(r.startDate); return d >= monthStart && d <= monthEnd;
-    });
-    if (dateFilter === 'past') rows = rows.filter(r => getDate(r.startDate) < now);
+    if (eqFilter)  rows = rows.filter(r => r.equipmentName===eqFilter);
+    if (dateFilter==='thismonth') rows = rows.filter(r => { const d=getDate(r.startDate); return d>=monthStart && d<=monthEnd; });
+    if (dateFilter==='past')      rows = rows.filter(r => getDate(r.startDate)<now);
  
     rows.sort((a,b) => {
-      let av = a[sortKeyC], bv = b[sortKeyC];
-      if (sortKeyC === 'startDate' || sortKeyC === 'cancelledAt') { av = getDate(av); bv = getDate(bv); }
-      if (av < bv) return -sortDirC; if (av > bv) return sortDirC; return 0;
+      let av=a[window.sortKeyC], bv=b[window.sortKeyC];
+      if (['startDate','cancelledAt'].includes(window.sortKeyC)) { av=getDate(av); bv=getDate(bv); }
+      if (av<bv) return -window.sortDirC; if (av>bv) return window.sortDirC; return 0;
     });
  
     const tbody = document.getElementById('can-table-body');
-    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">No cancellations</div></td></tr>'; return; }
-    tbody.innerHTML = rows.map(r => `
-      <tr>
-        <td>${r.customerName||'—'}</td>
-        <td>${r.equipmentName||'—'}</td>
-        <td>${fmtDate(r.startDate)}</td>
-        <td style="color:var(--yellow);">$${(r.estimatedTotal||0).toLocaleString()}</td>
-        <td style="color:var(--ash);font-size:0.8rem;">${r.cancelNotes||'—'}</td>
-        <td>${fmtDate(r.cancelledAt)}</td>
-      </tr>`).join('');
+    if (!rows.length) { tbody.innerHTML='<tr><td colspan="6"><div class="empty-state">No cancellations</div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => `<tr>
+      <td>${r.customerName||'—'}</td>
+      <td>${r.equipmentName||'—'}</td>
+      <td>${fmtDate(r.startDate)}</td>
+      <td style="color:var(--yellow);">$${(r.estimatedTotal||0).toLocaleString()}</td>
+      <td style="color:var(--ash);font-size:0.8rem;">${r.cancelNotes||'—'}</td>
+      <td>${fmtDate(r.cancelledAt)}</td>
+    </tr>`).join('');
   }
  
   window.filterCancellations = renderCancellationsTable;
   window.sortCancellations = function(key) {
-    if (sortKeyC === key) sortDirC *= -1; else { sortKeyC = key; sortDirC = 1; }
+    if (window.sortKeyC===key) window.sortDirC*=-1; else { window.sortKeyC=key; window.sortDirC=1; }
     renderCancellationsTable();
   };
  
   // ── EQUIPMENT MANAGEMENT ──
   function renderEqMgmt() {
     const grid = document.getElementById('eq-mgmt-grid');
-    if (!allEquipment.length) { grid.innerHTML = '<div class="empty-state">No equipment yet. Add your first unit.</div>'; return; }
-    grid.innerHTML = allEquipment.map(eq => `
-      <div class="eq-mgmt-card ${eq.active === false ? 'inactive' : ''}">
-        <div class="eq-mgmt-name">${eq.emoji || '🏗️'} ${eq.name}</div>
-        <div class="eq-mgmt-cat">${eq.category || ''} · Qty: ${eq.quantity || 1}</div>
-        <div class="eq-mgmt-rate">$${eq.dailyRate || 0}/day</div>
+    if (!window.allEquipment.length) { grid.innerHTML='<div class="empty-state">No equipment yet. Add your first unit.</div>'; return; }
+    grid.innerHTML = window.allEquipment.map(eq => `
+      <div class="eq-mgmt-card ${eq.active===false?'inactive':''}">
+        <div class="eq-mgmt-name">${eq.emoji||'🏗️'} ${eq.name}</div>
+        <div class="eq-mgmt-cat">${eq.category||''} · Qty: ${eq.quantity||1}</div>
+        <div class="eq-mgmt-rate">$${eq.dailyRate||0}/day</div>
         <div class="eq-mgmt-actions">
           <button class="eq-edit-btn" onclick="openEqModal('${eq.id}')">Edit</button>
-          <button class="eq-toggle-btn ${eq.active !== false ? 'active-toggle' : ''}"
-            onclick="toggleEquipment('${eq.id}', ${eq.active !== false})">
-            ${eq.active !== false ? '● Active' : '○ Inactive'}
+          <button class="eq-toggle-btn ${eq.active!==false?'active-toggle':''}"
+            onclick="toggleEquipment('${eq.id}', ${eq.active!==false})">
+            ${eq.active!==false?'● Active':'○ Inactive'}
           </button>
         </div>
       </div>`).join('');
@@ -1379,10 +1357,10 @@
  
   // ── EQUIPMENT MODAL ──
   window.openEqModal = function(id) {
-    editingEqId = id || null;
+    window.editingEqId = id || null;
     document.getElementById('eq-modal-title').textContent = id ? 'Edit Equipment' : 'Add Equipment';
     document.getElementById('eq-save-btn').textContent    = id ? 'Save Changes'   : 'Save Equipment';
-    const eq = id ? allEquipment.find(e => e.id === id) : null;
+    const eq = id ? window.allEquipment.find(e => e.id===id) : null;
     document.getElementById('eq-f-name').value     = eq?.name        || '';
     document.getElementById('eq-f-category').value = eq?.category    || '';
     document.getElementById('eq-f-emoji').value    = eq?.emoji       || '';
@@ -1395,45 +1373,42 @@
   window.saveEquipment = async function() {
     const name  = document.getElementById('eq-f-name').value.trim();
     const cat   = document.getElementById('eq-f-category').value;
-    const emoji = document.getElementById('eq-f-emoji').value.trim()  || '🏗️';
+    const emoji = document.getElementById('eq-f-emoji').value.trim() || '🏗️';
     const rate  = parseInt(document.getElementById('eq-f-rate').value) || 0;
     const qty   = parseInt(document.getElementById('eq-f-qty').value)  || 1;
     const desc  = document.getElementById('eq-f-desc').value.trim();
- 
-    if (!name || !cat || !rate) { showToast('Name, category, and rate are required.', 'error'); return; }
- 
-    const data = { name, category: cat, emoji, dailyRate: rate, quantity: qty, description: desc, available: true, active: true };
- 
+    if (!name||!cat||!rate) { showToast('Name, category, and rate are required.','error'); return; }
+    const data = { name, category:cat, emoji, dailyRate:rate, quantity:qty, description:desc, available:true, active:true };
     try {
-      if (editingEqId) {
-        await updateDoc(doc(db, 'equipment', editingEqId), data);
-        const idx = allEquipment.findIndex(e => e.id === editingEqId);
-        if (idx > -1) allEquipment[idx] = { id: editingEqId, ...data };
-        showToast('Equipment updated!', 'success');
+      if (window.editingEqId) {
+        await updateDoc(doc(db,'equipment',window.editingEqId), data);
+        const idx = window.allEquipment.findIndex(e => e.id===window.editingEqId);
+        if (idx>-1) window.allEquipment[idx] = { id:window.editingEqId, ...data };
+        showToast('Equipment updated!','success');
       } else {
-        const ref = await addDoc(collection(db, 'equipment'), data);
-        allEquipment.push({ id: ref.id, ...data });
-        showToast('Equipment added!', 'success');
+        const ref = await addDoc(collection(db,'equipment'), data);
+        window.allEquipment.push({ id:ref.id, ...data });
+        showToast('Equipment added!','success');
       }
       closeModal('eq-modal');
       renderEqMgmt();
       populateEqFilters();
-    } catch(e) { showToast('Error saving equipment.', 'error'); }
+    } catch(e) { console.error(e); showToast('Error saving equipment.','error'); }
   };
  
   window.toggleEquipment = async function(id, currentlyActive) {
     try {
-      await updateDoc(doc(db, 'equipment', id), { active: !currentlyActive });
-      const idx = allEquipment.findIndex(e => e.id === id);
-      if (idx > -1) allEquipment[idx].active = !currentlyActive;
+      await updateDoc(doc(db,'equipment',id), { active: !currentlyActive });
+      const idx = window.allEquipment.findIndex(e => e.id===id);
+      if (idx>-1) window.allEquipment[idx].active = !currentlyActive;
       renderEqMgmt();
-      showToast(`Equipment ${!currentlyActive ? 'activated' : 'deactivated'}.`, 'success');
-    } catch(e) { showToast('Error updating equipment.', 'error'); }
+      showToast(`Equipment ${!currentlyActive?'activated':'deactivated'}.`,'success');
+    } catch(e) { showToast('Error updating equipment.','error'); }
   };
  
   // ── HELPERS ──
   function populateEqFilters() {
-    const names = [...new Set(allEquipment.map(e => e.name))];
+    const names = [...new Set(window.allEquipment.map(e => e.name))];
     ['res-eq-filter','can-eq-filter'].forEach(id => {
       const sel = document.getElementById(id);
       if (!sel) return;
@@ -1451,26 +1426,25 @@
  
   function fmtDate(val) {
     const d = getDate(val);
-    if (!d || isNaN(d)) return '—';
-    return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+    if (!d||isNaN(d)) return '—';
+    return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
   }
  
   window.closeModal = function(id) {
     document.getElementById(id).classList.remove('open');
-    pendingAction = null;
+    window.pendingAction = null;
   };
  
   window.showToast = function(msg, type='') {
     const t = document.getElementById('toast');
     t.textContent = msg;
-    t.className = 'toast' + (type ? ' ' + type : '');
+    t.className = 'toast' + (type?' '+type:'');
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
   };
  
-  // close modals on overlay click
   document.querySelectorAll('.modal-overlay').forEach(el => {
-    el.addEventListener('click', e => { if (e.target === el) closeModal(el.id); });
+    el.addEventListener('click', e => { if (e.target===el) closeModal(el.id); });
   });
 </script>
  
