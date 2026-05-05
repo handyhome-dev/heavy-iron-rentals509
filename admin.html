@@ -831,9 +831,9 @@
         <div class="stat-sub">This month</div>
       </div>
       <div class="stat-card yellow">
-        <div class="stat-label">Potential Revenue</div>
+        <div class="stat-label">Estimated Revenue</div>
         <div class="stat-value money" id="stat-potential">—</div>
-        <div class="stat-sub">Pending estimated totals</div>
+        <div class="stat-sub">Based on confirmed bookings</div>
       </div>
       <div class="stat-card blue">
         <div class="stat-label">Actual Revenue</div>
@@ -1035,7 +1035,7 @@
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
  
   // ── REPLACE WITH YOUR FIREBASE CONFIG ──
-const firebaseConfig = {
+  const firebaseConfig = {
   apiKey: "AIzaSyAuBEw5APb0-G74XNaHfjeWW-NfeYtqNrM",
   authDomain: "heavy-iron-rentals.firebaseapp.com",
   projectId: "heavy-iron-rentals",
@@ -1127,9 +1127,9 @@ const firebaseConfig = {
     });
     document.getElementById('stat-pending').textContent   = pending.length;
     document.getElementById('stat-confirmed').textContent = thisMonth.length;
-    const potential = pending.reduce((s,r) => s + (r.estimatedTotal||0), 0);
+    const estimated = confirmed.reduce((s,r) => s + (r.estimatedTotal||0), 0);
     const actual    = confirmed.reduce((s,r) => s + (r.actualPaid||0), 0);
-    document.getElementById('stat-potential').textContent = `$${potential.toLocaleString()}`;
+    document.getElementById("stat-potential").textContent = `$${estimated.toLocaleString()}`;
     document.getElementById('stat-actual').textContent    = `$${actual.toLocaleString()}`;
   }
  
